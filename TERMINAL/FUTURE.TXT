@@ -1,0 +1,8 @@
+Améliorations futures (à prévoir)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[1]   MultiScreen
+[2]   Barres de défilement
+[3]   Gestion d'une imprimante locale
+[4]   Passage dynamique en 132 colonnes
+[5]   Commande Unix Edit pour éditer un fichier texte sous Windows

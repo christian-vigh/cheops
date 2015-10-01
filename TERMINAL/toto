@@ -1,0 +1,547 @@
+Comparaison des fichiers UTIL.CPP et ll
+****** UTIL.CPP
+
+/**************************************************************************
+
+   MODIFICATIONS :
+
+   29/04/97 (CV)
+        . Prise en charge du paramètre HardCopyMode de la section [Settings]
+          du fichier .INI dans la fonction CreateDialogBoxTemplate.
+          Lorsque ce paramètre booléen est à true, il se passe les choses
+          suivantes :
+
+          . La classe de boite de dialogue standard est utilisée
+          . Les controles "BorStatic" sont changés en "STATIC"
+          . Les controles "BorShade" ayant le style BSS_GROUP ou BSS_RGROUP
+            (les cadres, donc) se voient supprimer le bit de style WS_VISIBLE.
+
+          Tout ceci afin de permettre d'effectuer des recopies d'écran qui ne
+          contiennent pas de zones grises (ces zones passent mal à la 
+          photocopieuse).
+
+   02/07/97 (CV)
+        Ajout de la fonction EnableTextItem.
+
+ **************************************************************************/
+
+****** ll
+
+
+# include       "AllTerm.h"
+# pragma        hdrstop
+
+******
+
+****** UTIL.CPP
+
+# include       "AllTerm.h"
+# pragma        hdrstop
+
+# include       "Gadgets/DlgObjs.h"
+
+****** ll
+
+
+******
+
+****** UTIL.CPP
+
+
+/**************************************************************************/
+****** ll
+
+/**************************************************************************/
+******
+
+****** UTIL.CPP
+                        *               pItem ;
+        TDialogEntryData *              DlgDatas ;
+        FONTINFO                        FontInfo ;
+        register int                    i ;
+        int                             x, y ;
+        BOOL                            HardcopyMode ;
+        integer16                       remote_data_size, 
+                                        unix_data_size ;
+
+****** ll
+                        *               pItem ;
+        FONTINFO                        FontInfo ;
+        register int                    i, size/*, memsize */;
+        int                             x, y ;
+
+******
+
+****** UTIL.CPP
+
+// Si le paramètre HardCopyMode de la section [Settings] est à TRUE, on
+// enlève toute référence à des BorShade et on utilise les controles standard
+// de Windows. Les BorStatic deviennent alors des STATIC.
+        HardcopyMode = Configuration -> GetBoolean ( "Settings", "HardCopyMode", FALSE ) ;
+
+
+// Dans la définition du dialogue (structure TDialogDefinition), on saute
+****** ll
+
+// Dans la définition du dialogue (structure TDialogDefinition), on saute
+******
+
+****** UTIL.CPP
+
+        if  ( HardcopyMode )
+                * DlgTemplate. dtClassName = 0 ;
+
+
+****** ll
+
+
+******
+
+****** UTIL.CPP
+           {
+                ItemTemplates = new DLGITEMTEMPLATE  [ DlgTemplate. dtItemCount ] ;
+                DlgDatas      = new TDialogEntryData [ DlgTemplate. dtItemCount ] ;
+                memset ( DlgDatas, 0, sizeof ( TDialogEntryData ) * DlgTemplate. dtItemCount ) ;
+                
+
+****** ll
+           {
+                ItemTemplates = new DLGITEMTEMPLATE [ DlgTemplate. dtItemCount ] ;
+
+******
+
+****** UTIL.CPP
+
+                        if  ( HardcopyMode )
+                           {
+                        // Masquer les controles BorShade
+                                if  ( ! stricmp( pItem -> dtilClass, "BorShade" )  &&
+                                        ( pItem -> dtilStyle & ( BSS_GROUP | BSS_RGROUP ) ) )
+                                   {
+                                        pItem -> dtilStyle |=  WS_DISABLED ;
+                                        pItem -> dtilStyle &= ~WS_VISIBLE ;
+                                     }
+
+                        // Transformer les BorStatic en Static
+                                else if  ( ! stricmp ( pItem -> dtilClass, "BorStatic" ) )
+                                   {
+                                        strcpy ( pItem -> dtilClass, "STATIC" ) ;
+
+                                        if  ( pItem -> dtilStyle & BSS_LEFT )
+                                           {
+                                                pItem -> dtilStyle  &=  ~BSS_LEFT ;
+                                                pItem -> dtilStyle  |=  SS_LEFT ;
+                                             }
+
+                                        if  ( pItem -> dtilStyle & BSS_CENTER )
+                                           {
+                                                pItem -> dtilStyle  &=  ~BSS_CENTER ;
+                                                pItem -> dtilStyle  |=  SS_CENTER ;
+                                             }
+
+                                        if  ( pItem -> dtilStyle & BSS_RIGHT )
+                                           {
+                                                pItem -> dtilStyle  &=  ~BSS_RIGHT ;
+                                                pItem -> dtilStyle  |=  SS_RIGHT ;
+                                             }
+                                      }
+                            }
+
+****** ll
+
+                // On ne se préoccupe pas pour le moment des infos
+                        GetI16 ( size, pdata ) ;
+                        pdata += size ;
+                        pItem -> dtilInfo = 0 ;
+                        pItem -> dtilData = 0 ;
+                    }
+            }
+        DialogBoxTemplate. DialogTemplate       =  DlgTemplate ;
+        DialogBoxTemplate. FontInfo             =  FontInfo ;
+        DialogBoxTemplate. DialogItemTemplates  =  ItemTemplates ;
+    }
+
+HANDLE  CreateDialogBoxHandle (   DIALOGBOX &           DialogBoxTemplate )
+   {
+        register char *                 memp,
+                      *                 memory_dialog ;
+        register char far *             globalp ;
+        DLGTEMPLATE                     DlgTemplate = DialogBoxTemplate. DialogTemplate ;
+        DLGITEMTEMPLATE *               ItemTemplates = DialogBoxTemplate. DialogItemTemplates ,
+                        *               pItem ;
+        FONTINFO                        FontInfo = DialogBoxTemplate. FontInfo ;
+        HANDLE                          handle ;
+        register int                    i, size, memsize ;
+
+// On ne se préoccupe pas pour le moment des infos à la fin de la
+// définition
+// et on calcule la taille du bazar.
+// Remarque : on utilise sizeof ( DLGTEMPLATE ), etc... la taille calculée
+// sera légèrement supérieure à la taille réelle du dialogue car, par ce
+// procédé, on inclut aussi les pointeurs sur les chaînes de caractères.
+        size  = sizeof ( DLGTEMPLATE ) +
+                        ( sizeof ( DLGITEMTEMPLATE ) * DlgTemplate. dtItemCount ) ;
+        size += strlen ( DlgTemplate. dtMenuName )      + 1 +
+                strlen ( DlgTemplate. dtClassName )     + 1 +
+                strlen ( DlgTemplate. dtCaptionText )   + 1 ;
+
+        for  ( i = 0, pItem = ItemTemplates ;
+                        i < DlgTemplate. dtItemCount ;
+                                i ++, pItem ++ )
+                size += strlen ( pItem -> dtilClass )   + 1 +
+                        strlen ( pItem -> dtilText )    + 1 ;
+
+        memp    = memory_dialog = new  char [ size ] ;
+        memset ( memp, 0, size ) ;
+        memsize = size ;
+
+******
+
+****** UTIL.CPP
+
+
+                // On ne se préoccupe pas pour le moment des infos
+                        GetI16 ( unix_data_size  , pdata ) ;
+                        GetI16 ( remote_data_size, pdata ) ;
+
+                        if  ( unix_data_size )
+                                memcpy ( DlgDatas + i, pdata, sizeof ( DlgDatas [i] ) ) ;
+
+                        pdata += unix_data_size ;
+                        pdata += remote_data_size ;     // On ne gère pas les "RemoteData"
+
+                        pItem -> dtilInfo = 0 ;
+                        pItem -> dtilData = 0 ;
+
+                //  Aligner les numériques à droite
+                //  Cela se fait avant la création car je ne sais toujours pas
+                //  comment faire prendre en compte à un controle EDIT des
+                //  modifications de bits de style après la création du controle.
+                        if  ( * DlgDatas [i]. Format  ==  'n' ||
+                              * DlgDatas [i]. Format  ==  'd' )
+                           {
+                                pItem -> dtilStyle  &=  ~ES_LEFT ;
+                                pItem -> dtilStyle  &=  ~ES_CENTER ;
+                                pItem -> dtilStyle  |=   ES_RIGHT | ES_MULTILINE ;
+                             }
+                    }
+            }
+        DialogBoxTemplate. DialogTemplate       =  DlgTemplate ;
+        DialogBoxTemplate. FontInfo             =  FontInfo ;
+        DialogBoxTemplate. DialogItemTemplates  =  ItemTemplates ;
+        DialogBoxTemplate. DialogEntryData      =  DlgDatas ;
+    }
+
+HANDLE  CreateDialogBoxHandle (   DIALOGBOX &           DialogBoxTemplate )
+   {
+        register char *                 memp,
+                      *                 memory_dialog ;
+        register char far *             globalp ;
+        DLGTEMPLATE                     DlgTemplate = DialogBoxTemplate. DialogTemplate ;
+        DLGITEMTEMPLATE *               ItemTemplates = DialogBoxTemplate. DialogItemTemplates ,
+                        *               pItem ;
+        FONTINFO                        FontInfo = DialogBoxTemplate. FontInfo ;
+        HANDLE                          handle ;
+        register int                    i, size, memsize ;
+
+// On ne se préoccupe pas pour le moment des infos à la fin de la
+// définition
+// et on calcule la taille du bazar.
+// Remarque : on utilise sizeof ( DLGTEMPLATE ), etc... la taille calculée
+// sera légèrement supérieure à la taille réelle du dialogue car, par ce
+// procédé, on inclut aussi les pointeurs sur les chaînes de caractères.
+        size  = sizeof ( DLGTEMPLATE ) +
+                        ( sizeof ( DLGITEMTEMPLATE ) * DlgTemplate. dtItemCount ) ;
+        size += strlen ( DlgTemplate. dtMenuName )      + 1 +
+                strlen ( DlgTemplate. dtClassName )     + 1 +
+                strlen ( DlgTemplate. dtCaptionText )   + 1 ;
+
+        for  ( i = 0, pItem = ItemTemplates ;
+                        i < DlgTemplate. dtItemCount ;
+                                i ++, pItem ++ )
+                size += strlen ( pItem -> dtilClass )   + 1 +
+                        strlen ( pItem -> dtilText )    + 1 ;
+
+        memp    = memory_dialog = new  char [ size ] ;
+        memset ( memp, 0, size ) ;
+        memsize = size ;
+
+****** ll
+
+// La place mémoire est allouée pour la définition du dialogue : on copie
+// maintenant les données de la boîte.
+
+// Recopie des champs entiers
+        size  = sizeof ( DlgTemplate. dtStyle )         +
+                sizeof ( DlgTemplate. dtItemCount )     +
+                sizeof ( DlgTemplate. dtX )             +
+                sizeof ( DlgTemplate. dtY )             +
+                sizeof ( DlgTemplate. dtCX )            +
+                sizeof ( DlgTemplate. dtCY ) ;
+        memmove ( memp, & DlgTemplate. dtStyle, size ) ;
+        memp += size ;
+
+ // Recopie du nom de menu, de la classe et du titre
+        strcpy ( memp, DlgTemplate. dtMenuName ) ;
+        memp += strlen ( DlgTemplate. dtMenuName ) + 1 ;
+
+        strcpy ( memp, DlgTemplate. dtClassName ) ;
+        memp += strlen ( DlgTemplate. dtClassName ) + 1 ;
+
+        strcpy ( memp, DlgTemplate. dtCaptionText ) ;
+        memp += strlen ( DlgTemplate. dtCaptionText ) + 1 ;
+
+// Taille et nom de la police
+        memmove ( memp, & FontInfo. PointSize, sizeof ( FontInfo. PointSize ) ) ;
+        memp += sizeof ( FontInfo. PointSize ) ;
+
+        strcpy ( memp, FontInfo. szTypeFace ) ;
+        memp += strlen ( FontInfo. szTypeFace ) + 1 ;
+
+******
+
+****** UTIL.CPP
+
+// La place mémoire est allouée pour la définition du dialogue : on copie
+// maintenant les données de la boîte.
+
+// Recopie des champs entiers
+        size  = sizeof ( DlgTemplate. dtStyle )         +
+                sizeof ( DlgTemplate. dtItemCount )     +
+                sizeof ( DlgTemplate. dtX )             +
+                sizeof ( DlgTemplate. dtY )             +
+                sizeof ( DlgTemplate. dtCX )            +
+                sizeof ( DlgTemplate. dtCY ) ;
+        memmove ( memp, & DlgTemplate. dtStyle, size ) ;
+        memp += size ;
+
+ // Recopie du nom de menu, de la classe et du titre
+        strcpy ( memp, DlgTemplate. dtMenuName ) ;
+        memp += strlen ( DlgTemplate. dtMenuName ) + 1 ;
+
+        strcpy ( memp, DlgTemplate. dtClassName ) ;
+        memp += strlen ( DlgTemplate. dtClassName ) + 1 ;
+
+        strcpy ( memp, DlgTemplate. dtCaptionText ) ;
+        memp += strlen ( DlgTemplate. dtCaptionText ) + 1 ;
+
+// Taille et nom de la police
+        memmove ( memp, & FontInfo. PointSize, sizeof ( FontInfo. PointSize ) ) ;
+        memp += sizeof ( FontInfo. PointSize ) ;
+
+        strcpy ( memp, FontInfo. szTypeFace ) ;
+        memp += strlen ( FontInfo. szTypeFace ) + 1 ;
+
+
+// Recopie des contrôles
+****** ll
+
+// Recopie des contrôles
+******
+
+****** UTIL.CPP
+
+        if  ( dlgbox. DialogTemplate. dtMenuName )
+                delete []  dlgbox. DialogTemplate. dtMenuName ;
+
+        if  ( dlgbox. DialogTemplate. dtClassName )
+                delete []  dlgbox. DialogTemplate. dtClassName ;
+
+        if  ( dlgbox. DialogTemplate. dtCaptionText )
+                delete []  dlgbox. DialogTemplate. dtCaptionText ;
+
+        if  ( dlgbox. FontInfo. szTypeFace )
+                delete []  dlgbox. FontInfo. szTypeFace ;
+
+        if  ( dlgbox. DialogEntryData )
+                delete []  dlgbox. DialogEntryData ;
+        
+****** ll
+
+        delete []  dlgbox. DialogTemplate. dtMenuName ;
+        delete []  dlgbox. DialogTemplate. dtClassName ;
+        delete []  dlgbox. DialogTemplate. dtCaptionText ;
+        delete []  dlgbox. FontInfo. szTypeFace ;
+        
+******
+
+****** UTIL.CPP
+           {
+                if  ( pItem -> dtilText )
+                        delete []  pItem -> dtilText ;
+
+                if  ( pItem -> dtilClass )
+                        delete []  pItem -> dtilClass ;
+            }
+****** ll
+           {
+                delete []  pItem -> dtilText ;
+                delete []  pItem -> dtilClass ;
+            }
+******
+
+****** UTIL.CPP
+
+        if  ( ItemTemplates )
+                delete []  ItemTemplates ;
+    }
+****** ll
+
+        delete []  ItemTemplates ;
+    }
+******
+
+****** UTIL.CPP
+
+BOOL    IsFocusMessage  ( UINT   Message, WPARAM  /* WParam */, LPARAM  LParam )
+   {
+****** ll
+
+BOOL    IsFocusMessage  ( UINT   Message, WPARAM  WParam, LPARAM  LParam )
+   {
+******
+
+****** UTIL.CPP
+        if  ( ! stricmp ( ClassName, "EDIT" )  ||
+              ! stricmp ( ClassName, "LZCColor" )  ||
+              ! stricmp ( ClassName, "GROUPBOX" )  ||
+              ( ! stricmp ( ClassName, "BorShade" )  &&
+                ( :: GetWindowLong ( hwnd, GWL_STYLE ) & WS_GROUP ) ) )
+           {
+****** ll
+        if  ( ! stricmp ( ClassName, "EDIT" )  ||
+              ! stricmp ( ClassName, "LZCColor" ) )
+           {
+******
+
+****** UTIL.CPP
+             }
+        else if  ( ! stricmp ( ClassName, "BUTTON" )  ||
+                   ! stricmp ( ClassName, "BorBtn" )  ||
+                   ! stricmp ( ClassName, "CHECKBOX" )  ||
+                   ! stricmp ( ClassName, "BorCheck" )  ||
+                   ! stricmp ( ClassName, "RADIOBUTTON" ) ||
+                   ! stricmp ( ClassName, "BorRadio" ) )
+           {
+                if  ( NotifyCode  ==  BN_KILLFOCUS  ||  NotifyCode  ==  BN_SETFOCUS )
+                        return ( TRUE ) ;
+             }
+
+        return ( FALSE ) ;
+    }
+
+
+****** ll
+             }
+
+        return ( FALSE ) ;
+    }
+
+******
+
+Resync a ‚chou‚. Les fichiers sont trop diff‚rents
+****** UTIL.CPP
+
+
+
+/**************************************************************************/
+/*                                                                        */
+/*  RestoreFocusToChild -                                                 */
+/*      Redonne le focus à une fenerte fille de la classe TCheopsDialog   */
+/*      ou TEditWindow. Le paramètre 'avoid_this_one' est le handle       */
+/*      d'une fenetre à laquelle il ne faut pas redonner le focus.        */
+/*      Cette fonction est appelée par les destructeurs des objets        */
+/*      TCheopsDialog et TEditWindow afin que le menu graphique redonne   */
+/*      le focus à une éventuelle fenetre du meme type après fermeture.   */
+/*      Retourne TRUE si une fenetre a été trouvée.                       */
+/*                                                                        */
+/**************************************************************************/
+
+static HWND     FoundChild ;
+
+
+static BOOL  FAR PASCAL  EnumProc  ( HWND  hwnd, LPARAM  avoid_this_one )
+   {
+        char            Buffer [ 256 ] ;
+
+
+        if  ( ( HWND ) avoid_this_one  !=  hwnd  &&
+              IsWindowVisible ( hwnd )           &&
+              ! IsIconic ( hwnd ) )
+           {
+                GetClassName ( hwnd, Buffer, sizeof ( Buffer ) ) ;
+
+                if  ( ! stricmp ( Buffer, "TCheopsDialog" )  ||
+                      ! stricmp ( Buffer, "TEditWindow" ) )
+                   {
+                        FoundChild = hwnd ;
+                        return ( FALSE ) ;
+                    }
+              }
+
+        return ( TRUE ) ;
+     }
+
+
+
+BOOL    RestoreFocusToChild  ( HWND  parent, HWND  avoid_this_one )
+   {
+        FoundChild = 0 ;
+        EnumTaskWindows ( GetWindowTask ( parent ), EnumProc, ( LPARAM ) avoid_this_one ) ;
+
+        if  ( FoundChild )
+           {
+                SetActiveWindow ( FoundChild ) ;
+                return ( TRUE ) ;
+             }
+        else
+                return ( FALSE ) ;
+     }
+        
+
+
+
+/**************************************************************************/
+/*                                                                        */
+/*  EnableTextItem -                                                      */
+/*      Fonction appelée pour chaque controle à rendre disabled.          */
+/*      Dans le cas des controles statiques, cette fonction ne fait rien. */
+/*      Dans le cas des controles EDIT, au lieu de les mettre disabled    */
+/*      (ce qui provoque l'affichage du texte en gris), elle positionne   */
+/*      le style READONLY du controle.                                    */
+/*                                                                        */
+/**************************************************************************/
+
+void    EnableTextItem  ( HWND  control_hwnd, BOOL  state )
+   {
+        char            ClassName [ MAX_PARAMETER_LENGTH ] ;
+        BOOL            IsCombo ;
+
+
+        GetClassName ( control_hwnd, ClassName, sizeof ( ClassName ) ) ;
+
+
+        if  ( IsWindowEnabled ( GetParent ( GetParent ( GetParent ( control_hwnd ) ) ) ) )
+           {
+                if  ( ! stricmp ( ClassName, "STATIC" )  ||  ! stricmp ( ClassName, "BorStatic" ) ) 
+                        return ;
+                else if  ( ! stricmp ( ClassName, "EDIT" )  ||
+                           ! stricmp ( ClassName, "CHECKBOX" )  ||  
+                           ! stricmp ( ClassName, "RADIOBUTTON" )  ||  
+                           ! stricmp ( ClassName, "BUTTON" )  ||  
+                           ! stricmp ( ClassName, "BorBtn" )  ||  
+                           ! stricmp ( ClassName, "BorCheck" )  ||  
+                           ! stricmp ( ClassName, "BorRadio" )  ||  
+                           ( IsCombo =  stricmp ( ClassName, "COMBOBOX" )  ==  0 )  !=  0 )
+                   {
+                        DWORD   Style = GetWindowLong ( control_hwnd, GWL_STYLE ) ;
+
+
+                        if  ( IsCombo )
+                           {
+                        // C'est pas portable : c'est l'id du controle EDIT de la combo
+                                HWND    edit_hwnd = GetDlgItem ( control_hwnd, 1001 ) ;
+****** ll
+******
+
+

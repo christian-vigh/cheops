@@ -1,0 +1,302 @@
+Mercredi 26 octobre 1994
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+    . 07h50 - 11h00 : 
+	Implémentation et test des fonctions :
+			UWF_CHECK_DLG_BUTTON
+			UWF_CHECK_RADIO_BUTTON
+			UWF_GET_DLG_ITEM_TEXT
+			UWF_IS_DLG_BUTTON_CHECKED
+			UWF_SEND_DLG_ITEM_MESSAGE
+			UWF_SET_DLG_ITEM_TEXT
+			UWF_SET_ACTIVE_WINDOW
+			UWF_ENABLE_WINDOW
+			UWF_ENABLE_CONTROL
+			UWF_GET_ACTIVE_WINDOW
+			UWF_SET_FOCUS
+			UWF_GET_FOCUS
+			UWF_SET_CONTROL_FOCUS
+			UWF_GET_CONTROL_FOCUS
+	 + Implémentation partielle de UWF_NEXT_EVENT
+
+    . 11h00 - 18h00 : 
+	Problème de communication dans la configuration suivante :
+		Liaison en série sur la Computone du RS puis connexion par
+		rlogin sur le serveur.
+	Le problème survient après une erreur sur un message; les tentatives
+	de resynchronisation ne fonctionnent plus.
+	Il semblerait qu'un caractère soit "mangé" au niveau du champ Time
+	ou Clock du message.
+	Pour parer à ce problème (soulevé lors du test d'une boîte de 
+	dialogue), il a fallu assigner la constante 0x20202020L aux champs
+	Time et Clock.
+
+
+Jeudi 27 octobre 1994
+~~~~~~~~~~~~~~~~~~~~~
+
+    . 07h40 - 11h45 :
+	Problème de communication : pour vérifier si le workaround de la
+	veille fonctionne bien, le programme de transfert de fichier recf (qui
+	ne fonctionne pas dans cette configuration) a été réessayé.
+	Il y avait deux problèmes :
+
+	. La fonction Unix 'synchronize' (dans messages.c) est appelée chaque
+	  fois qu'un message est incomplet commence par faire un flush sur
+	  la ligne au moyen de :
+		ioctl ( fd, TCFLSH, 2 ) ;
+	  Cet appel provoquait un bloquage apparent des communications; à la
+	  suite de ceci, recf ne recevait plus rien (et partait en timeout
+	  error).
+	  Après suppression de cet appel, tout semble fonctionner...
+
+	. Ou presque : recf part en erreur (too many retries) après avoir 
+	  reçu une certaine partie d'un fichier. Dans le fichier d'origine
+	  (sur le PC), la seule marque distinctive est la présence d'un 'ô'
+	  (accent circonflexe) quelques caractères après les derniers reçus
+	  par Unix.
+
+	Il s'avère que la Computone du RS "mange" les caractères suivants :
+	145 et 147 ('æ' et 'ô').
+	Ce phénomène n'apparaît pas sur l'Intelliport du serveur.
+
+    . 11h45 - 12h30  
+	Transfert de Windows.h : ça marche!
+
+
+Vendredi 28 octobre
+~~~~~~~~~~~~~~~~~~~
+
+    . 07h45 - 11h00 :
+	Fin d'implémentation de la fonction UWF_NEXT_EVENT + test.
+	Création de la classe TEventQueue pour bufferiser sous Windows les
+	évènements déclenchés par l'utilisateurs et qui ne sont pas encore
+	demandés par Unix.
+
+    . 11h00 - 11h30 :
+	Point sur le projet avec PLM.
+
+    . 11h30 - 13h00 :
+	Basculement du projet du Pentium vers le 486 de la salle assistance.
+	Problème avec le port série numéro 1 (hs???)
+	Connexion sur le numéro 2.
+	Il y a énormément d'erreurs de transmission entre le PC et le serveur
+	(ciserv) lorsque la liaison se fait à 38400 bauds. Le protocole que j'ai
+	établi s'en sort, mais avec des ralentissements notoires. Moralité :
+	se cantonner à 9600 bauds.
+
+     . 13h00 - 16h30 :
+	. Assistance 	+
+	. Implémentation de la fonction UWF_MESSAGE_BEEP
+	. Début d'implémentation de la fonction UWF_INITDIALOG.
+	  Sous Unix : UWFBeginInitDialog, UWFAddToInit, UWFEndInitDialog.
+
+     . 16h30 - 17h00 :
+	. Basculement du projet du PC486 de l'assistance vers le Pentium
+	. Assistance à Carole pour pb La Ferté.
+
+
+Lundi 31 octobre :
+~~~~~~~~~~~~~~~~
+
+     . 07h45 - 09h45 :
+	. Fin d'implémentation de la fonction UWF_INIT_DIALOG + test.
+	
+     . 09h45 - 10h20 :
+	. Implémentation de la fonction UWF_SET_CURSOR + test.
+	
+     . 10h20 - 12h30 :
+	. Implémentation et test de la fonction UWF_SET_ICON.	    
+
+     . 13h15 - 15h20
+	. Problème : IDOK n'est plus attrapé dans les boîtes de dialogue, et
+	  provoque la fermeture immédiate de la boîte.
+	  Solution : La séquence : SetFocus ( GetNextDlgTabItem ... a été
+	  déportée de DialogFunction vers CmOK
+	  Explication : magie magie
+
+     . 16h00 - 16h15 :
+	. Bug dans UWFSendDlgItemMessage : Ne fonctionnait pas si lparam ne
+	  pointait pas sur des données (ie, lorsque lparam était une valeur
+	  sur 32 bits et non un pointeur). Modif dans UWDialog.c (erreur sur
+	  un test if : variable locale Size utilisée au lieu de paramètre
+	  lparam_size).
+
+     . 15h20 - 17h00  
+	. Problème non résolu : Implémentation de la fonction
+	  UWF_SET_CUSTOM_ICON : l'icône résultante n'est pas franchement 
+	  ce qu'elle devrait être.
+
+	. Problème partiellement résolu :
+		Il y a une bug dans Windows, qui survient pour les fenêtres
+		ayant le style DS_MODALFRAME (bordure de boîte de dialogue 
+		- ne pouvant donc être redimensionnée) et WS_MINIMIZEBOX 
+		(bouton de réduction).
+		Lorsqu'on positionne le curseur de la souris sur la minimize
+		box, la WindowProc répond bien HTREDUCE au message WM_NCHITTEST.
+		Cependant, lorsqu'on clique sur ce bouton, il est redessiné
+		en décalé, c'est à dire par dessus la bordure DS_MODALFRAME.
+		Tout se passe donc comme si Windows ne savait pas tenir compte
+		de la largeur de ce genre de bordure, et se contentait de gérer
+		correctement les fenêtres WS_DLGFRAME et WS_THICKFRAME.
+
+		Le problème se résout en attrapant les 3 messages suivants :
+		WM_NCLBUTTONDOWN, WM_NCLBUTTONUP et WM_LBUTTONUP.
+
+		WM_NCLBUTTONDOWN :
+			Si le style de la fenêtre est DS_MODALFRAME, sauvegarde
+			le hittest code passé en paramètre, sinon effectue 
+			l'action par défaut.
+
+		WM_NCLBUTTONUP :
+			Si le style de la fenêtre est DS_MODALFRAME et
+			Si le hittest est HTREDUCE et
+			Si le hittest sauvegardé est ausii HTREDUCE alors
+			il faut envoyer un message WM_SYSCOMMAND avec en
+			paramètre SC_MINIMIZE.
+
+		WM_LBUTTONUP :
+			N'existe que pour gérer le cas où on clique dans la
+			minimize box puis on fait glisser le curseur pour
+			le positionner dans la partie cliente de la fenêtre :
+			comme on est sorti du bouton Minimize, aucune action
+			ne doit avoir lieu (pas d'envoi de WM_SYSCOMMAND).
+
+		Dans la situation actuelle, le bouton ne s'enfonce jamais.
+		Pour ce faire, il faudrait :
+			. Le dessiner en enfoncer dans EvNCLButtonDown
+			. Le relâcher dans EnNCLButtonDown et EVLButtonDown
+			  s'il a été enfoncé.
+		Questions : 
+			. Comment afficher les minimize/maximize box en 
+			  enfoncé?
+			. Comment récupérer la hauteur d'une bordure 
+			  DS_MODALFRAME afin de dessiner ces boutons au bon 
+			  endroit ?
+			
+
+		
+Mercredi 2 novembre :
+~~~~~~~~~~~~~~~~~~~
+
+    . 08h00 - 09h30 :
+	. Résolution du problème d'affichage des minimize box (fonction
+	  DrawMinimizeBox de TUnixDialogBox).
+
+    . 10h00 - 10h15, 13h00 - 14h15 :
+	. Fonction UWF_SET_CUSTOM_ICON : Workaround (le problème provient
+	  d'un mauvais paramètre passé à la fonction CreateIcon; mais
+	  lequel ?).
+	  Solution : Ecriture dans un fichier de l'icône téléchargée, puis
+	  chargement avec la fonction ExtractIcon.
+	  A supprimer dès que j'aurai compris pourquoi la solution initiale
+	  ne fonctionne pas bien.
+
+    . 14h15 - 18h00, entre deux appels de maintenance :
+	. Programme senf (send_file) d'Unix vers Windows.
+	. A faire : générateur de script de ressource à partir d'une
+	  définition d'écran Cheops.
+
+
+Jeudi 3 novembre :
+~~~~~~~~~~~~~~~~
+    . 08h00 - 09h00 :
+	. Générateur de script de ressource (début)
+
+
+Vendredi 4 novembre :
+~~~~~~~~~~~~~~~~~~~
+    . 08h00 - 09h00 :
+	. Générateur de script de ressource (suite)
+
+
+Lundi 7 novembre
+~~~~~~~~~~~~~~~~
+     . 08h30 - 10h20 :
+	. Boîte de dialogue Réception d'un fichier
+	. Pour le dessin du bouton Minimize : Dans une fenêtre normale, le
+	  bouton est relaché dès que le curseur de la souris le quitte (même
+	  si le bouton de la souris n'est pas relaché) -> Interception du
+	  message WM_MOUSEMOVE pour adopter ce comportement dans
+	  TUnixDialogBox.
+	. Passage des variables suivantes : TerminalWindow, Device, Connection,
+	  Configuration, ApplicationTable ; en global et modification idoine
+	  des constructeurs des classes concernées.
+	. Fonction GetDefaultWindowPosition pour simuler l'utilisation de
+	  CW_USEDEFAULT dans l'origine (x,y) d'une boîte de dialogue (afin
+	  que la création de la boîte copie le comportement de CreateWindow
+	  lorsque cette constante est utilisée).
+	. Gestion du bouton minimize dans util.cpp
+     . 13h00-14h00 :
+	. Bug : general protection fault depuis modifications de ce matin
+
+
+Mardi 8 novembre
+~~~~~~~~~~~~~~~~
+    . 08h00 - 12h15
+	. Bug : provient du passage de la gestion de la minimize box dans
+	  util.cpp.
+	  Problème No1 : on est susceptible de recevoir des messages
+	  WM_MOUSEMOVE avant que HWindow ne soit valide -> rajout d'un test
+	  verifiant la validité du dialogue et de son HWindow dans la fonction
+	  DSModalFrameStyle.
+	  Problème No2 : lorsque les fonctions de gestion des minimize box ont
+	  été passées en global, DSModalFrameStyle renvoyait le message à la
+	  dialog box (croyant appeler la fonction membre de la classe de base
+	  TDialog) mais en fait, c'était une fonction de la classe dérivée qui
+	  était appelée, et rappelait DSModalFrameStyle, qui rappelait la
+	  fonction de la classe dérivée, etc.
+	  Pour résoudre le problème (de façon élégante), les macros
+	  DEFINE_MODALFRAME_HANDLERS et EV_MODALFRAME_HANDLERS ont été créées.
+
+    . 12h45 - 14h00, 17h05 - 17h20 :
+	. Test gestion de la minimize box. Problème : lorsqu'on sort trop vite
+	  de la fenêtre après avoir cliqué sur ce bouton, les messages souris
+	  ne sont plus envpoyés à la fenêtre -> le bouton ne se relève pas
+	  -> Ajout de SetCapture/ReleaseCapture : ça ne marche plus : l'appel
+	  à WM_NCHITTEST renvoie toujours HTBORDER
+	  Solution : il faut convertir les coordonnées passées en paramètres,
+	  et qui sont relatives au coin supérieur gauche de la partie client
+	  de la fenêtre, en coordonnées écran, avant d'envoyer le message
+	  WM_NCHITTEST.
+
+Lundi 14 novembre :
+~~~~~~~~~~~~~~~~~
+
+   . 08h00 - 12h30, 14h00 - 17h00  :
+	. Programme circ (implémentation de l'alignement auto des champs de 
+	  saisie).
+
+
+
+Mardi  15 novembre :
+~~~~~~~~~~~~~~~~~~
+   . 06h50 - 18h00 :
+	. circ : implémentation des boîtes de dialogue style Borland +
+	  alignement automatique.
+
+
+Mercredi 16 novembre :
+~~~~~~~~~~~~~~~~~~~~
+
+    . 06h50 - 19h15 :
+	. Correction de circ : pas d'alignement pour les champs DISPLAYONLY
+	. Séparation de Dialog.ch en UnixDlg.h et UnixDlg.Cpp
+	. Implémentation des fonctions :
+		UWF_HELP
+		UWF_CHEOPS_DIALOG
+		UWF_SET_CHEOPS_FUNCTION_KEYS
+	. UWF_CHEOPS_DIALOG implémentée par une classe TCheopsDialog dérivée
+	  de TDecoratedFrame avec :
+		. La boîte de dialogue dans sa partie cliente
+		. Un pavé de touches de fonction en bas.
+	  Problèmes :
+		. Pas de pavé de touches de fonction
+		. Plantage au 2e affichage de la boîte de dialogue
+		-> Dans UnixApplication :: DeleteObject, utilisation du RTTI
+		   pour utiliser delete avec le bon type d'objet.
+	. Regroupement de gauge.ch et window.ch en unix.h et unix.cpp
+	
+	  
+Jeudi 17 novembre :
+~~~~~~~~~~~~~~~~~

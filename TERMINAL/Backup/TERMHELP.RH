@@ -1,0 +1,14 @@
+/**************************************************************************/
+/*                                                                        */
+/*  TermHelp.rh  -  Christian Vigh, 95/08/12.                             */
+/*                                                                        */
+/*  Définition des identificateurs de HELPTABLEs.                         */
+/*                                                                        */
+/**************************************************************************/
+
+
+# define	HELP_BASE			8000
+
+
+# define	IDH_TERMINAL_WINDOW		( HELP_BASE +   0 )
+# define	IDH_GENERAL_OPTIONS_DIALOG	( HELP_BASE +   1 )

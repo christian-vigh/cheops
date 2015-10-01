@@ -1,0 +1,112 @@
+/**************************************************************************/
+/*                                                                        */
+/*  Help.rc  -  Christian Vigh, 95/08/12.                                 */
+/*                                                                        */
+/*  Définition des tables de contexte d'aide pour l'application.          */
+/*                                                                        */
+/**************************************************************************/
+
+
+# include	"Help.h"
+# include	"Terminal.h"
+# include	"Dialogs.h"
+# include	"TermHelp.rh"
+
+
+name type
+{
+    "debut",
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
+    "fin"
+}
+
+/**************************************************************************/
+/*                                                                        */
+/*  Contextes d'aide en ligne pour la fenêtre principale.                 */
+/*                                                                        */
+/**************************************************************************/
+
+
+IDH_TERMINAL_WINDOW	HELPTABLE
+   BEGINHELP
+	DEFINE_WINDOW
+		HELPKEY ( 0, "Window help" )
+	END_WINDOW
+
+	
+	DEFINE_MENU ( "Menu bar help" )
+
+		DEFINE_MENU ( "File menu" )	
+			HELPKEY ( IDM_File_Connect, "File/Connect" )
+			HELPKEY ( IDM_File_Disconnect, "File/Disconnect" )
+			HELPKEY ( IDM_File_Transfer, "File/Transfer" )
+			HELPKEY ( IDM_File_Receive, "File/Receive" )
+			HELPKEY ( IDM_File_Log, "File/Log" )
+			HELPKEY ( IDM_File_Printer_Config, "File/Printer config" ) 
+			HELPKEY ( IDM_File_Print_Page, "File/Print page" ) 
+			HELPKEY ( IDM_File_Print_Continuous, "File/Print continuous" )
+			HELPKEY ( IDM_File_Save_Configuration, "File/Save config" )
+			HELPKEY ( IDM_File_Quit, "File/Quit" )
+		END_MENU
+
+					
+		DEFINE_MENU ( "Edit" ) 
+			HELPKEY ( IDM_Edit_Copy, "Edit/Copy" )
+			HELPKEY ( IDM_Edit_Paste, "Edit/Paste" )
+			HELPKEY ( IDM_Edit_Redo, "Edit/Redo" )
+		END_MENU
+
+		DEFINE_MENU ( "Options" )
+			HELPKEY ( IDM_Options_Display_All, "Options/DisplayAll" )
+			HELPKEY ( IDM_Options_Function_Keys, "Options/Function Keys" )
+			HELPKEY ( IDM_Options_Global, "Options/Global" )
+
+			DEFINE_MENU ( "Options/Defaults" )
+				HELPKEY ( IDM_Options_Session_Defaults, "Options/Defaults/Session" )
+				HELPKEY ( IDM_Options_Serial_Defaults, "Options/Defaults/Serial" )
+				HELPKEY ( IDM_Options_Network_Defaults, "Options/Defaults/Network" )
+			END_MENU
+
+			HELPKEY ( IDM_Options_Configuration, "Options/Configuration" ) 
+		END_MENU
+			
+		DEFINE_MENU ( "Sessions" ) 
+			HELPKEY ( IDM_Window_Next_Session, "Sessions/Next" )
+			HELPKEY ( IDM_Window_Previous_Session, "Sessions/Previous" )
+		END_MENU
+
+		DEFINE_MENU ( "Help" )
+			HELPKEY ( IDM_Help_Index, "Help/Index" )
+			HELPKEY ( IDM_Help_Context, "Help/Context" )
+			HELPKEY ( IDM_Help_About, "Help/About" )
+		END_MENU
+	END_MENU
+
+    ENDHELP 
+
+
+
+/**************************************************************************/
+/*                                                                        */
+/*  Aide pour la classe TGeneralOptionsDialog.                            */
+/*                                                                        */
+/**************************************************************************/
+
+IDH_GENERAL_OPTIONS_DIALOG	HELPTABLE
+   BEGINHELP
+	DEFINE_WINDOW 
+		HELPKEY ( IDD_GENERAL, "General options dialog" )
+	END_WINDOW
+
+	DEFINE_CONTROL
+		HELPKEY ( IDC_ALARM_BEEP, "Alarm beep" )
+		HELPKEY ( IDC_AUTO_OPEN, "Auto open" )
+		HELPKEY ( IDC_CONFIRM_ON_EXIT, "Confirm on exit" )
+		HELPKEY ( IDC_FF_ON_HARDCOPY, "FF on hardcopy" )
+		HELPKEY ( IDC_MIN_REDO_SIZE, "Min redo size" )
+	END_CONTROL
+
+   ENDHELP 
+		
+
+

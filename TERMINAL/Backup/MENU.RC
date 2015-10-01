@@ -1,0 +1,260 @@
+/****************************************************************************
+
+
+   MENU.RC
+
+	Fichier de ressources pour le menu principal de Cheops.
+
+
+*****************************************************************************/
+
+
+# include	"ChopMenu.h"
+# include	"ChopJet.h"
+# include	"ChopMail.h"
+
+
+
+ARROW_ICON ICON "resource/arrow.ico"
+MENU_ICON 	ICON 	"resource/menu.ico"
+DETACH_CURSOR CURSOR "resource/detach.cur"
+POPUP_CURSOR CURSOR "resource/popup.cur"
+NEEDLE_BITMAP BITMAP "resource/needle.bmp"
+RMAIL_ICON ICON "resource/rmail.ico"
+SMAIL_ICON ICON "resource/smail.ico"
+
+
+CM_FILE_QUIT		BITMAP "resource/mnquit.bmp"
+CM_FILE_LOG BITMAP "resource/mnlog.bmp"
+CM_FILE_SENDMAIL BITMAP "resource/mnsmail.bmp"
+CM_FILE_READMAIL BITMAP "resource/mnrmail.bmp"
+CM_FILE_CONFIGURE BITMAP "resource/mnconfig.bmp"
+
+
+
+/**************************************************************************/
+/*                                                                        */
+/*  Menu.                                                                 */
+/*                                                                        */
+/**************************************************************************/
+
+CHEOPS_MENU	MENU
+   {
+	POPUP "&Fichier"
+	  {
+		MENUITEM	"&Configurer...\tAlt+C", CM_FILE_CONFIGURE
+		MENUITEM	SEPARATOR
+		MENUITEM	"&Historique...\tAlt+H", CM_FILE_LOG
+		MENUITEM	SEPARATOR
+		MENUITEM	"&Lire le courrier...\tAlt+L", CM_FILE_READMAIL
+		MENUITEM	"&Ecrire un courrier...\tAlt+E", CM_FILE_SENDMAIL
+		MENUITEM  	SEPARATOR
+		MENUITEM	"&Quitter\tAlt+F4", CM_FILE_QUIT
+	    }
+
+	POPUP  "&Cheops"
+	   {
+		MENUITEM	"Bidon", Cheops_Module_Base
+	    }
+
+	POPUP  "F&enêtre"
+	   {
+		MENUITEM	"Ranger les &menus", CM_WINDOW_ORDER_MENUS
+		MENUITEM	"Ranger les &icônes", CM_WINDOW_ORDER_ICONS
+		MENUITEM	SEPARATOR
+		MENUITEM	"Réduire les écrans de &saisie", CM_WINDOW_ICONIFY_SCREENS
+		MENUITEM	"Réduire les fenêtres d'&édition", CM_WINDOW_ICONIFY_LISTS
+		MENUITEM	"Réduire &toutes les fenêtres", CM_WINDOW_ICONIFY_ALL
+	    }
+     }
+
+
+
+CHEOPS_ACCEL	ACCELERATORS
+   {
+	"C", CM_FILE_CONFIGURE, ALT, VIRTKEY
+	"H", CM_FILE_LOG, ALT, VIRTKEY
+	"L", CM_FILE_READMAIL, ALT, VIRTKEY
+	"E", CM_FILE_SENDMAIL, ALT, VIRTKEY,
+	"V", CM_ENTER_COMMAND, ALT, VIRTKEY
+	"T", CM_UNHIDE_COMMAND, ALT, CONTROL, SHIFT, VIRTKEY
+	VK_F1, CM_FILE_READMAIL, VIRTKEY
+	VK_F2, CM_FILE_SENDMAIL, VIRTKEY
+	VK_F4, CM_ENTER_COMMAND, VIRTKEY
+	VK_F5, CM_FILE_CONFIGURE, VIRTKEY
+    }
+
+
+MAIL_ACCEL  ACCELERATORS
+   {
+	"F", IDOK, ALT, VIRTKEY
+    }
+
+
+RMAIL_ACCEL ACCELERATORS
+   {
+	"C", IDC_RMAIL_COPY, ALT, VIRTKEY
+	"S", IDC_RMAIL_DELETE, ALT, VIRTKEY
+	"F", IDOK, ALT, VIRTKEY
+    }
+
+
+SMAIL_ACCEL ACCELERATORS
+   {
+	"E", IDC_SMAIL_SEND, ALT, VIRTKEY
+	"F", IDOK, ALT, VIRTKEY
+    }
+
+
+
+STRINGTABLE
+   {
+	CM_FILE_CONFIGURE, "Configuration de l'environnement Cheops (F5 - Config)"
+	CM_FILE_LOG, "Affiche la fenêtre de l'historique"
+	CM_FILE_READMAIL, "Affiche le courrier reçu"
+	CM_FILE_SENDMAIL, "Envoie un courrier à d'autres utilisateurs"
+	CM_FILE_QUIT, "Quitte l'application Cheops"
+	CM_WINDOW_ORDER_MENUS, "Range les menus flottants"
+	CM_WINDOW_ORDER_ICONS, "Range les icônes"
+	CM_WINDOW_ICONIFY_SCREENS, "Met les écrans de saisie sous forme d'icône"
+	CM_WINDOW_ICONIFY_LISTS, "Met les fenêtres d'édition sous forme d'icône"
+	CM_WINDOW_ICONIFY_ALL, "Met toutes les fenêtres Cheops sous forme d'icône"
+     }
+
+
+
+/**************************************************************************/
+/*                                                                        */
+/*  Barre d'état.                                                         */
+/*                                                                        */
+/**************************************************************************/
+
+#include <owl/statusba.rh>
+
+STRINGTABLE
+{
+  SC_SIZE-1,     "Commandes pour manipuler cette fenêtre (et les autres)"
+  SC_SIZE,       "Redimensionne la fenêtre"
+  SC_MOVE,       "Déplace la fenêtre"
+  SC_MINIMIZE,   "Réduit la fenêtre sous forme d'icône"
+  SC_MAXIMIZE,   "Agrandit la fenêtre au maximum de l'écran"
+  SC_NEXTWINDOW, "Va vers la fenêtre suivante"
+  SC_PREVWINDOW, "Va vers la fenêtre précédente"
+  SC_CLOSE,      "Ferme la fenêtre"
+  SC_RESTORE,    "Restaure la fenêtre à sa taille d'origine"
+  SC_TASKLIST,   "Active une autre application"
+}
+
+
+
+
+
+CHECKMARKON BITMAP "resource/chkon.bmp"
+CHECKMARKOFF BITMAP "resource/chkoff.bmp"
+INDON BITMAP "resource/indon.bmp"
+INDOFF BITMAP "resource/indoff.bmp"
+
+
+CM_OPTIONS_CONFIG BITMAP "resource/config.bmp"
+
+
+
+
+/**************************************************************************/
+/*                                                                        */
+/*  Accélérateurs pour le menu popup.                                     */
+/*                                                                        */
+/**************************************************************************/
+
+
+
+POPUPMENU_ACCEL	ACCELERATORS
+   {
+	VK_F4, CM_CLOSE_POPUP, CONTROL, VIRTKEY
+     }
+
+
+
+
+
+
+
+
+/**************************************************************************/
+/*                                                                        */
+/*  Configuration Cheops.                                                 */
+/*                                                                        */
+/**************************************************************************/
+
+IDD_CHEOPS_SUCONFIG DIALOG 23, 86, 324, 172
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CLASS "BorDlg_Gray"
+CAPTION "Configuration Cheops"
+FONT 8, "MS Sans Serif"
+{
+ CONTROL "&Exercice :", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 11, 16, 38, 8
+ CONTROL "&Mois :", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 11, 34, 22, 8
+ EDITTEXT IDC_YEAR, 57, 14, 36, 12, ES_RIGHT | WS_BORDER | WS_TABSTOP
+ EDITTEXT IDC_MONTH, 57, 32, 19, 12, ES_RIGHT | WS_BORDER | WS_TABSTOP
+ CONTROL "Eta&blissement :", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 6, 70, 53, 8
+ EDITTEXT IDC_SITE_NAME, 66, 68, 185, 12
+ CONTROL "&Imprimante :", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 112, 16, 46, 8
+ COMBOBOX IDC_PRINTER, 159, 14, 86, 46, CBS_DROPDOWN | WS_TABSTOP
+ CONTROL "&Programmes :", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 11, 109, 48, 8
+ EDITTEXT IDC_PROGS, 67, 107, 178, 12
+ EDITTEXT IDC_DESCRIP, 67, 125, 178, 12
+ EDITTEXT IDC_DATA, 67, 143, 178, 12
+ CONTROL "Descri&ptifs :", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 11, 127, 42, 8
+ CONTROL "&Données :", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 11, 145, 37, 8
+ CONTROL "", -1, "BorShade", BSS_GROUP | BSS_CAPTION | BSS_LEFT | WS_CHILD | WS_VISIBLE, 6, 7, 93, 45
+ CONTROL "", -1, "BorShade", BSS_GROUP | BSS_CAPTION | BSS_LEFT | WS_CHILD | WS_VISIBLE, 107, 7, 144, 28
+ CONTROL "", -1, "BorShade", BSS_HDIP | BSS_LEFT | WS_CHILD | WS_VISIBLE, 0, 60, 259, 2
+ CONTROL "", -1, "BorShade", BSS_HDIP | BSS_LEFT | WS_CHILD | WS_VISIBLE, 0, 86, 259, 2
+ CONTROL "", -1, "BorShade", BSS_GROUP | BSS_CAPTION | BSS_LEFT | WS_CHILD | WS_VISIBLE, 6, 94, 245, 72
+ DEFPUSHBUTTON "&Ok", IDOK, 267, 8, 50, 14
+ PUSHBUTTON "&Annuler", IDCANCEL, 267, 31, 50, 14
+ CONTROL "", -1, "BorShade", BSS_VDIP | BSS_LEFT | WS_CHILD | WS_VISIBLE, 258, 0, 2, 172
+ CONTROL "Pro&tection :", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 112, 44, 44, 8
+ EDITTEXT IDC_PROT, 159, 42, 51, 12
+}
+
+
+
+IDD_CHEOPS_CONFIG DIALOG 23, 86, 324, 86
+STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | DS_MODALFRAME
+CLASS "BorDlg_Gray"
+CAPTION "Configuration Cheops"
+FONT 8, "MS Sans Serif"
+{
+ CONTROL "&Exercice :", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 11, 16, 38, 8
+ CONTROL "&Mois :", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 11, 34, 22, 8
+ EDITTEXT IDC_YEAR, 57, 14, 36, 12, ES_RIGHT | WS_BORDER | WS_TABSTOP
+ EDITTEXT IDC_MONTH, 57, 32, 19, 12, ES_RIGHT | WS_BORDER | WS_TABSTOP
+ CONTROL "Eta&blissement :", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 6, 70, 53, 8
+ EDITTEXT IDC_SITE_NAME, 66, 68, 185, 12
+ CONTROL "&Imprimante :", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 112, 16, 46, 8
+ COMBOBOX IDC_PRINTER, 159, 14, 86, 46, CBS_DROPDOWN | WS_TABSTOP
+ CONTROL "", -1, "BorShade", BSS_GROUP | BSS_CAPTION | BSS_LEFT | WS_CHILD | WS_VISIBLE, 6, 7, 93, 45
+ CONTROL "", -1, "BorShade", BSS_GROUP | BSS_CAPTION | BSS_LEFT | WS_CHILD | WS_VISIBLE, 107, 7, 144, 28
+ CONTROL "", -1, "BorShade", BSS_HDIP | BSS_LEFT | WS_CHILD | WS_VISIBLE, 0, 60, 259, 2
+ DEFPUSHBUTTON "&Ok", IDOK, 267, 8, 50, 14
+ PUSHBUTTON "&Annuler", IDCANCEL, 267, 31, 50, 14
+ CONTROL "", -1, "BorShade", BSS_VDIP | BSS_LEFT | WS_CHILD | WS_VISIBLE, 258, 0, 2, 86
+}
+
+
+IDD_SENDMAIL DIALOG 35, 43, 272, 186
+STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | DS_MODALFRAME
+CLASS "BorDlg_Gray"
+CAPTION "Ecrire un courrier"
+FONT 8, "MS Sans Serif"
+{
+ CONTROL "à l'&utilisateur :", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 6, 10, 50, 8
+ EDITTEXT IDC_USER_LIST, 60, 8, 187, 12, ES_AUTOHSCROLL | WS_BORDER | WS_TABSTOP
+ CONTROL "&Contenu du courrier :", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 6, 28, 74, 8
+ EDITTEXT IDC_MAIL_TEXT, 6, 37, 256, 116, ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | WS_BORDER | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP | ES_WANTRETURN
+ CONTROL "", -1, "BorShade", BSS_HDIP | BSS_LEFT | WS_CHILD | WS_VISIBLE, 0, 160, 272, 2
+ DEFPUSHBUTTON "&Ok", IDOK, 151, 166, 50, 14, WS_DISABLED
+ PUSHBUTTON "&Annuler", IDCANCEL, 212, 166, 50, 14
+}
+

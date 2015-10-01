@@ -1,0 +1,120 @@
+;==========================================================================
+;=                                                                        =
+;=  Séquences d'échappement de l'émulation ANSI.                          =
+;=                                                                        =
+;==========================================================================
+
+
+Séquence	Gérée?		Description
+~~~~~~~~	~~~~~~		~~~~~~~~~~~
+
+\E[vn		Non		Fin de l'inverse vidéo
+\E[3;1m		Non		Début de clignotement
+\E[3;0m		Non		Fin du clignotement
+\E[J		Oui		Effacement de la position du curseur à la
+				fin de l'écran
+\E[0J		Non		Idem à \E[J
+\E[1J		Non		Effacement du début de l'écran à la position
+				du curseur.
+\E[2J		Oui		Effacement de tout l'écran
+\E[K 		Oui		Effacement de la position du curseur à la fin
+				de la ligne
+\E[0K		Non		Idem à \E[K
+\E[1K		Non		Effacement du début de la ligne à la position
+				du curseur
+\E[2K		Non		Effacement de toute la ligne
+\E[11m		Non		Afficher les codes de contrôle
+\E[10m		Non		Ne pas afficher les codes de contrôle
+\E[X		Non		Effacement du caractère courant (curseur
+				inchangé)
+\E[%nX		Non		Effacement de %n caractères
+\E[Z		Non		tabulation arrière
+\E[%nZ		Non		%n tabulations arrière
+\E[S		Oui		Défilement d'une ligne vers le haut
+\E[%nS		Non		Défilement de %n lignes vers le haut
+\E[T		Oui		Défilement d'une ligne vers le bas
+\E[%nT		Non		Défilement de %n lignes vers le bas
+\E[A		Oui		Remonter le curseur d'une ligne
+\E[%nA		Non		Remonter le curseur de %n lignes
+\E[B		Oui		Descendre le curseur d'une ligne
+\E[de		Non		Idem à \E[B
+\E[%nB		Non		Descendre le curseur de %n lignes
+\E[%de		Non		Idem à \E[%nB
+\E[C		Oui		Déplacer le curseur d'une colonne à droite
+\E[%a		Non		Idem à \E[C
+\E[%nC		Non		Déplacer le curseur de %n colonnes à droite
+\E[%da		Non		Idem à \E[%nC
+\E[D		Oui		Déplacer le curseur d'une colonne à gauche
+\E[%nD		Non		Déplacer le curseur de %n colonnes à gauche
+\E[L		Oui		Insérer une ligne
+\E[%nL		Non		Insérer %n lignes
+\E[@		Oui		Insérer un caractère
+\E[%n@		Non		Insérer %n caractères
+\E[M		Oui		Supprimer une ligne
+\E[%nM		Non		Supprimer %n lignes
+\E[P		Oui		Supprimer le caractère courant
+\E[%nP		Non		Supprimer %n caractères à partir du caractère
+				courant
+\E[F		Non		Remonter le curseur d'une ligne et le mettre
+				en colonne 1
+\E[%nF		Non		Remonter le curseur de %n lignes et le mettre
+				en colonne 1
+\E[E		Non		Descendre le curseur d'une ligne et le mettre
+				en colonne 1
+\E[%nE		Non		Descendre le curseur de %n lignes et le mettre
+				en colonne 1
+\E[3%nm		Oui		Sélection de la couleur de texte
+\E[4%nm		Oui		Sélection de la couleur de fond
+\E[2h		Non		Bloquer le clavier
+\E[2l		Non		Débloquer le clavier
+\E[2i		Non		Envoi du contenu de l'écran vers l'hôte
+\E[=%nF		Non		Sélection de la couleur de texte en vidéo
+				normale
+\E[=%nG		Non		Sélection de la couleur de fond en vidéo
+				normale
+\E[=%nH		Non		Sélection de la couleur de texte en inverse
+				vidéo
+\E[=%nI		Non		Sélection de la couleur de fond en inverse
+				vidéo
+\E[=0E		Non		Effacer le bit de clignotement (afin de
+				permettre la surbirllance de fond)
+\E[=1E		Non		Activer le bit de clignotement
+\E[=0D		Non		Désactiver la surbrillance du fond
+\E[=1D		Non		Activer la surbrillance du fond
+\E[=%n;%nC	Non		Définir la taille du curseur ('1e;dernière'
+				ligne)
+\E[=%n;%nB	Non		Fréquence (en Hertz) et durée (en milli-
+				secondes) de la sonnerie
+\E[0;%nm	Non		Etablir l'inverse vidéo (%n=7), la
+				surbrillance (%n=1), le soulignement (%n=4),
+				le clignotement (%n=5)
+\E[10;%nm,
+\E[11;%nm,
+\E[12;%nm	Non		Idem (?)
+
+\E[%n;%nH	Oui		Déplacement du curseur (absolu, ligne/colonne)
+\E[H		Oui		Curseur en haut à gauche de l'écran (home)
+\E[8m		Non		Début du blank mode
+\E[m		Oui		Annulation de tous les attributs
+\E[0m		Non		Idem à \E[m, mais masque les caractères de
+				contrôle et remet les couleurs normales
+\E[1m		Oui		Début de la surbrillance
+\E[4m		Oui		Début du soulignement
+\E[5m		Emulé		Début du clignotement
+\E[7m		Oui		Début de l'inverse vidéo
+\E[12m		Oui		Sélection jeu de caractères graphiques
+\E[10m		Oui		Fin du jeu de caractères graphiques
+\E[?2l		Non		Changement dynamique du type d'émulation
+\E[?5i		Non		Redirection vers l'imprimante
+\E[?4i		Non		Fin de redirection vers l'imprimante
+\E[?7h		Non		Curseur en mode Wrap
+\E[?7l		Non		Fin du curseur en mode wrap
+\E[5i		Non		Redirige les caractères vers l'imprimante
+				(pas d'affichage à l'écran)
+\E[4i		Non		Fin de la redirection
+\E[80c		Non		Passage en 80 colonnes
+\E[132c		Non		Passage en 132 colonnes
+\E[%nl		Non		Passage en mode %n lignes
+
+
+

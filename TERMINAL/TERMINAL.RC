@@ -1,0 +1,1004 @@
+/**************************************************************************/
+/*                                                                        */
+/*  Terminal.rc  - Christian Vigh, 94/09/12.                              */
+/*                 (d'après Sébastien George et Christophe Després).      */
+/*                                                                        */
+/*  Script de définition des ressources de l'application.                 */
+/*                                                                        */
+/**************************************************************************/
+
+# include	<owl/inputdia.rh>
+# include	<owl/printer.rh>
+# include	"Terminal.h"
+# include	"Dialogs.h"
+# include	"EditFile.h"
+
+# include	"Menu.rc"
+
+
+
+
+/***
+	Boîte pour l'abandon de l'impression en cours
+ ***/
+IDD_ABORTDIALOG DIALOG 84, 51, 200, 60
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Impression en cours"
+{
+  CTEXT "", ID_PORT, 35, 24, 130, 8, SS_CENTER | NOT WS_VISIBLE | WS_GROUP
+  CTEXT "", -1, 0, 0, 1, 1 
+  DEFPUSHBUTTON "Annuler", IDCANCEL, 80, 40, 40, 14, WS_TABSTOP
+  CTEXT "Impression de la page %d de", ID_PAGE, 35, 8, 130, 8, SS_CENTER | NOT WS_VISIBLE | WS_GROUP
+  CTEXT " '%s' ", ID_TITLE, 0, 16, 200, 8
+  CTEXT "%s  sur  %s", ID_DEVICE, 35, 24, 130, 8
+}
+
+
+
+STRINGTABLE LOADONCALL MOVEABLE DISCARDABLE
+{
+  IDS_PRNON,            " sur "
+  IDS_PRNERRORTEMPLATE, "'%s' n'a pas été imprimé."
+  IDS_PRNOUTOFMEMORY,   "Mémoire insuffisante"
+  IDS_PRNOUTOFDISK,     "Espace disque insuffisant"
+  IDS_PRNCANCEL,        "L'impression a été annulée"
+  IDS_PRNMGRABORT,      "L'impression a été annulée depuis le gestionnaire d'impression"
+  IDS_PRNGENERROR,      "Une erreur est survenue durant l'impression"
+  IDS_PRNERRORCAPTION,  "Erreur d'impression"
+}
+
+
+
+
+/***
+	Boîte de saisie.
+ ***/
+IDD_INPUTDIALOG DIALOG 20, 24, 180, 64
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+{
+  LTEXT "", ID_PROMPT, 10, 8, 160, 10
+  EDITTEXT ID_INPUT, 10, 20, 160, 12, WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL
+  DEFPUSHBUTTON "&Ok", IDOK, 47, 42, 40, 14
+  PUSHBUTTON "&Annuler", IDCANCEL, 93, 42, 40, 14
+}
+
+
+
+
+
+/***
+	Bitmaps, icônes et curseurs.
+ ***/
+
+ CURSOR_TERMINAL	CURSOR		"Resource\Terminal.Cur"
+ CURSOR_LISTBOX		CURSOR 		"Resource\listbox.cur"
+CURSOR_WAIT CURSOR "resource/wait.cur"
+
+ICON_TERMINAL ICON "resource/terminal.ico"
+ICON_LISTE ICON "resource/liste.ico"
+ICON_SCREEN ICON "resource/screen.ico"
+
+
+ /***
+	Menus.
+  ***/
+
+MENU_TERMINAL	MENU
+   {
+	POPUP	"&Fichier"
+	   {
+		MENUITEM 	"Ouvrir la session\tAlt+C", IDM_File_Connect
+		MENUITEM	"Fermer la session\tAlt+D", IDM_File_Disconnect
+
+		MENUITEM	SEPARATOR
+		MENUITEM	"Définir une nouvelle session", IDM_File_Add_Session
+		MENUITEM	"Supprimer la session", IDM_File_Remove_Session
+
+		MENUITEM	SEPARATOR                         
+		MENUITEM	"&Transférer...\tAlt+S",  IDM_File_Transfer
+		MENUITEM	"&Recevoir...\tAlt+R", IDM_File_Receive
+
+		MENUITEM	SEPARATOR
+		MENUITEM	"&Historique...\tAlt+H", IDM_File_Log
+		MENUITEM	SEPARATOR
+		MENUITEM	"&Configuration de l'imprimante...", IDM_File_Printer_Config
+		MENUITEM	"Imprimer cette &page\tCtrl+P", IDM_File_Print_Page
+		MENUITEM	"Imprimer en co&ntinu", IDM_File_Print_Continuous
+		MENUITEM 	SEPARATOR
+		MENUITEM	"&Enregistrer la configuration", IDM_File_Save_Configuration
+		MENUITEM	SEPARATOR
+		MENUITEM	"&Quitter\tAlt+Q", IDM_File_Quit
+	    }
+
+
+	POPUP	"&Edition"
+	   {
+		MENUITEM	"&Copier\tCtrl+Ins", IDM_Edit_Copy
+		MENUITEM	"Co&ller\tShift+Ins", IDM_Edit_Paste
+		MENUITEM	"Sélectionner &tout\tCtrl+5", IDM_Edit_Select_All
+		MENUITEM	SEPARATOR
+		MENUITEM	"&Liste des commandes...\tCtrl+R", IDM_Edit_Redo
+	    }
+
+
+	POPUP   "&Options"
+	   {
+		MENUITEM	"&Afficher tous les caractères", IDM_Options_Display_All
+		MENUITEM	"Afficher les touches de &fonction", IDM_Options_Function_Keys
+		MENUITEM	SEPARATOR
+		
+		MENUITEM	"&Général", IDM_Options_Global
+	
+		POPUP  "Paramètres par &défaut"
+		  {
+			MENUITEM  "S&ession...", IDM_Options_Session_Defaults
+			MENUITEM  "Liaison &série...", IDM_Options_Serial_Defaults
+			MENUITEM  "Liaison réseau...", IDM_Options_Network_Defaults
+		   }
+
+		MENUITEM	"&Configuration...\tAlt+M", IDM_Options_Configuration
+	    }
+
+
+	POPUP   "&Sessions"
+	  {
+		MENUITEM	"&Suivante\tCtrl-PgDn", IDM_Window_Next_Session
+		MENUITEM	"&Précédente\tCtrl-PgUp", IDM_Window_Previous_Session
+	   }
+
+	POPUP 	"\a&Maintenance"
+	  {
+		MENUITEM	"&Récupérer la session", IDM_Maintenance_Unfreeze
+	   }
+
+	POPUP	"\a&Aide"
+	   {
+		MENUITEM	"&Index", IDM_Help_Index
+		MENUITEM	"Aide &contextuelle...\tCtrl-F1", IDM_Help_Context
+		MENUITEM	"&A propos de...", IDM_Help_About
+	    }
+     }
+
+
+
+/***
+	Accélérateurs
+ ***/
+
+ ACCELERATORS_TERMINAL	ACCELERATORS
+    {
+	"H", IDM_File_Log, ALT, VIRTKEY
+	"Q", IDM_File_Quit, ALT, VIRTKEY
+	VK_INSERT, IDM_Edit_Copy, CONTROL, VIRTKEY
+	VK_INSERT, IDM_Edit_Paste, SHIFT, VIRTKEY
+	"S", IDM_File_Transfer, ALT, VIRTKEY
+	"R", IDM_File_Receive, ALT, VIRTKEY
+	"^R", IDM_Edit_Redo
+	"L", IDM_Lambda_Shortcut, ALT, CONTROL, SHIFT, VIRTKEY
+	"C", IDM_File_Connect, ALT, VIRTKEY
+	"D", IDM_File_Disconnect, ALT, VIRTKEY
+	"M", IDM_Options_Configuration, ALT, VIRTKEY
+	VK_NEXT, IDM_Window_Next_Session, CONTROL, VIRTKEY
+	VK_PRIOR, IDM_Window_Previous_Session, CONTROL, VIRTKEY
+	"B", IDM_Window_Session_List, ALT, VIRTKEY
+	"^P", IDM_File_Print_Page
+	"O", IDM_Maintenance_Objects, ALT, CONTROL, SHIFT, VIRTKEY
+
+	VK_F1, IDM_Window_Session_Base + 0, CONTROL, VIRTKEY
+	VK_F2, IDM_Window_Session_Base + 1, CONTROL, VIRTKEY
+	VK_F3, IDM_Window_Session_Base + 2, CONTROL, VIRTKEY
+	VK_F4, IDM_Window_Session_Base + 3, CONTROL, VIRTKEY
+	VK_F5, IDM_Window_Session_Base + 4, CONTROL, VIRTKEY
+	VK_F6, IDM_Window_Session_Base + 5, CONTROL, VIRTKEY
+	VK_F7, IDM_Window_Session_Base + 6, CONTROL, VIRTKEY
+	VK_F8, IDM_Window_Session_Base + 7, CONTROL, VIRTKEY
+	VK_F9, IDM_Window_Session_Base + 8, CONTROL, VIRTKEY
+	VK_F10, IDM_Window_Session_Base + 9, CONTROL, VIRTKEY
+	VK_F11, IDM_Window_Session_Base + 10, CONTROL, VIRTKEY
+	VK_F12, IDM_Window_Session_Base + 11, CONTROL, VIRTKEY
+     }                                                            
+
+
+
+
+
+/***
+	Chaînes de caractères.
+ ***/
+
+ STRINGTABLE
+    {
+	IDM_File_Connect - 1, "Commandes générales (sessions,impression,...)"
+	IDM_File_Connect, "Ouvre la session en cours"
+	IDM_File_Disconnect, "Ferme la session en cours"
+	IDM_File_Add_Session, "Définir une nouvelle session (temporaire)"
+	IDM_File_Remove_Session, "Supprimer une session (temporaire)"
+	IDM_File_Transfer, "Transfère un fichier de Windows vers Unix"
+	IDM_File_Receive, "Reçoit un fichier provenant d'Unix"
+	IDM_File_Log, "Enregistre les caractères reçus dans un fichier"
+	IDM_File_Printer_Config, "Choix de l'imprimante"
+	IDM_File_Print_Page, "Imprime cette page-écran"
+	IDM_File_Print_Continuous, "Imprime tout ce qui arrive dans la session"
+	IDM_File_Save_Configuration, "Enregistre les paramètres"
+	IDM_File_Quit, "Quitte l'application Terminal"
+
+	IDM_Edit_Copy - 1, "Commandes d'édition"
+	IDM_Edit_Copy, "Copie le texte sélectionné dans le presse-papiers"
+	IDM_Edit_Paste, "Insère le contenu du presse-papiers à la position du curseur"
+	IDM_Edit_Redo, "Ouvre une fenêtre contenant les dernières commandes saisies"
+	IDM_Edit_Select_All, "Sélectionne l'ensemble de la fenêtre"
+
+	IDM_Options_Display_All - 1, "Paramétrage de l'émulateur"
+	IDM_Options_Display_All, "Affiche tous les caractères"
+	IDM_Options_Function_Keys, "Affiche le pavé de touches de fonction"
+	IDM_Options_Preferences, "Modification des paramètres généraux"
+	IDM_Options_Configuration, "Modification/création d'une configuration"
+
+	IDM_Window_Next_Session - 1, "Gestion des sessions ouvertes"
+	IDM_Window_Next_Session, "Rend active la session suivante"
+	IDM_Window_Previous_Session, "Rend active la session précédente"
+
+	IDM_Maintenance_Unfreeze - 1, "Commandes de maintenance Chartier Informatique"
+	IDM_Maintenance_Unfreeze, "Tente de débloquer une session si rien ne répond"
+	
+	IDM_Help_About - 1, "Aide en ligne de l'application"
+	IDM_Help_About, "Affiche des informations sur la version actuelle de TERMINAL"
+
+# if	STANDALONE
+	IDM_File_Open, "Ouvre une TEditWindow sur un fichier texte"
+# endif
+
+     }
+
+
+
+/***
+	Configuration par défaut.
+ ***/
+
+IDR_DEFAULT_CONFIGURATION	PARAMETERS
+   {
+	";***************************************************************************\0",
+	";*                                                                         *\0",
+	";*  Fichier de configuration pour l'application terminal..                 *\0",
+	";*                                                                         *\0",
+	";***************************************************************************\0",
+	" \0",
+	" \0",
+	"[Settings]\0",
+	"LambdaUser      =  True\0",
+	"AlarmBeep       =  On\0",
+	"MinRedoSize     =  4\0",
+	"Configuration   =  Configuration1\0",
+	"AutoOpen        =  False\0",
+	"ConfirmOnExit   =  True\0",
+	"GraphicFont	 =  MS LineDraw\0",
+	"FFOnHardCopy    =  True\0",
+	"FrameHardcopy   =  False\0",
+	" \0",
+	" \0",
+	"[Defaults]\0",
+	"Font	        =  Terminal\0",
+	"FontHeight      =  -12\0",
+	"FontWidth       =  0\0",
+	"BackgroundColor =  default\0",
+	"ForeGroundColor =  default\0",
+	"TransparentMode =  false\0",
+	"Echo            =  Off\0",
+	"Emulation       =  Ansi.Trm\0",
+	"HostCharSet     =  OEM\0",
+	"Speed           =  9600\0",
+	"Port            =  COM1\0",
+	"Parity          =  None\0",
+	"DataBits        =  8\0",
+	"StopBits        =  1\0",
+	"Server          =  cheops\0",
+	"Delay           =  50\0",
+	"LinkType        =  Serial\0",
+	" \0",
+	" \0",
+	"[(Configuration) Configuration1]\0",
+	"Session1        =  Session1\0",
+	" \0",
+	"[(Session) Session1]\0",
+	" \0",
+      } 
+
+
+
+
+
+/***
+	Emulation par défaut.
+ ***/
+
+IDR_DEFAULT_EMULATION	PARAMETERS
+   {
+	"; ANSI.TRM\0",
+	";\0",
+	"; Définition de l'émulation UNIX pour un terminal ANSI.\0",
+	";\0",
+	" \0",
+	" \0",
+	"[Settings]\0",
+	"GraphicFont		=  MS LineDraw\0",
+	"GraficFontHeight        =  13\0",
+	"Columns			=  80\0",
+	"Lines			=  25\0",
+	" \0",
+	" \0",
+	"[Special Characters]			; Caractère reçu, caractère affiché\0",
+	"UpperLeftCorner		=  Z, \\218\0",
+	"UpperRightCorner	=  ?, \\191\0",
+	"LowerLeftCorner		=  @, \\192\0",
+	"LowerRightCorner	=  Y, \\217\0",
+	"VerticalLine		=  3, \\179\0",
+	"HorizontalLine		=  D, \\196\0",
+	"SolidSquare		=  [, \\219\0",
+	"CheckerBoard		=  1, \\176\0",
+	"Degree			=  x, \\248\0",
+	"PlusMinus		=  q, \\241\0",
+	"Squares			=  2, \\178\0",
+	"Plus			=  E, +\0",
+	"LeftTee			=  C, \\195\0",
+	"RightTee		=  4, \\180\0",
+	"BottomTee		=  A, \\193\0",
+	"TopTee			=  B, \\194\0",
+	" \0",
+	" \0",
+	"[Keys]\0",
+	"F1		=  \\E[M		; kf1\0",
+	"F2		=  \\E[N		; kf2\0",
+	"F3		=  \\E[O		; etc.\0",
+	"F4		=  \\E[P\0",
+	"F5		=  \\E[Q\0",
+	"F6		=  \\E[R\0",
+	"F7		=  \\E[S\0",
+	"F8		=  \\E[T\0",
+	"F9		=  \\E[U\0",
+	"F10		=  \\E[V\0",
+	"F11		=  \\E[W\0",
+	"F12		=  \\E[X\0",
+	"Home		=  \\E[H		; khome\0",
+	"NextPage        =  \\E[G		; knp\0",
+	"PreviousPage	=  \\E[I		; kpp\0",
+	"Tab		=  \\t\0",
+	"BackTab		=  \\E[Z		; kcbt\0",
+	"Backspace	=  ^H		; kbs\0",
+	"Delete		=  \\E[E		; kdch1\0",
+	"DelLine		=  \\E[I		; kdl1\0",
+	"Down		=  \\E[B		; kcud1\0",
+	"End		=  \\E[F		; kend\0",
+	"ClearEOL	=  \\E[G		; kel\0",
+	"Insert		=  \\E[L		; kich1\0",
+	"HomeDown	=  \\E[F		; kll\0",
+	"Right		=  \\E[C		; kcuf1\0",
+	"Up		=  \\E[A		; kcuu1\0",
+	"Left		=  \\E[D		; kcub1\0",
+	"Break		=  \\127\0",
+	"XON		=  \\17\0",
+	"XOFF		=  \\19\0",
+	" \0",
+	" \0",
+	"[Escapes]\0",
+	"Bell		=  ^G\0",
+	"BackSpace	=  ^H\0",
+	"Blink		=  \\E[5m\0",
+	"Bold		=  \\E[1m\0",
+	"BackTab		=  \\E[Z\0",
+	"Clear		=  \\E[2J\\E[H\0",
+	"CarriageReturn	=  \\r\0",
+	"Newline		=  \\n\0",
+	"Left		=  ^H\0",
+	"Down		=  \\E[B\0",
+	"Right		=  \\E[C\0",
+	"Up		=  \\E[A\0",
+	"GotoXY		=  \\E[%n;%nH\0",
+	"Delete		=  \\E[P\0",
+	"DelLine		=  \\E[M\0",
+	"ClearEOD	=  \\E[J\0",
+	"ClearEOL	=  \\E[K\0",
+	"Home		=  \\E[H\0",
+	"Tab		=  \\t\0",
+	"Insert		=  \\E[@\0",
+	"InsertLine	=  \\E[L\0",
+	"ScrollUp	=  \\E[S\0",
+	"Reverse		=  \\E[7m\0",
+	"ScrollDown	=  \\E[T\0",
+	"StartUnderline	=  \\E[4m\0",
+	"StopUnderline	=  \\E[m\0",
+	"AllAttrOFF	=  \\E[10;0m\0",
+	"InvisibleMode	=  \\E[8m\0",
+	"StartStandout	=  \\E[7m\0",
+	"StopStandout	=  \\E[m\0",
+	"StartACS	=  \\E[12m\0",
+	"StopACS		=  \\E[10m\0",
+	"SetBackground	=  \\E[4%nm\0",
+	"SetForeground	=  \\E[3%nm\0",
+	"SetColor	=  \\E[=%n;%nC\0",
+	"SetFKString	=  \\E[=fs%n;%l;%sm\0",
+	"SetFKLabel	=  \\E[=fl%n;%l;%sm\0",
+	"EnableFK	=  \\E[=fe\0",
+	"DisableFK	=  \\E[=fd\0",
+	"BulkPrintBegin	=  \\E[=bpb\0",
+	"BulkPrintEnd	=  \\E[=bpe\0",
+	"FramePrintBegin =  \\E[=fpb\0",
+	"FramePrintEnd	=  \\E[=fpe\0",
+	"CancelPrint	=  \\E\\E\\E\0",
+	" \0",
+     }
+
+
+
+
+
+IDD_REDO DIALOG 21, 86, 332, 157
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Historique des commandes"
+FONT 8, "MS Sans Serif"
+{
+ DEFPUSHBUTTON "&Ok", IDOK, 267, 12, 50, 14
+ PUSHBUTTON "&Annuler", IDCANCEL, 267, 35, 50, 14
+ COMBOBOX IDC_REDO_LIST, 6, 12, 244, 137, CBS_SIMPLE | CBS_HASSTRINGS | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP | CBS_AUTOHSCROLL
+}
+
+
+IDD_APPLICATION_LIST DIALOG 12, 70, 292, 158
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Liste des programmes"
+FONT 8, "MS Sans Serif"
+{
+ CONTROL "&Basculer vers", IDOK, "BUTTON", BS_DEFPUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 226, 7, 60, 14
+ CONTROL "&Terminer", IDC_APP_KILL, "BUTTON", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 226, 25, 60, 14
+ CONTROL "&Annuler", IDCANCEL, "BUTTON", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 226, 43, 60, 14
+ CONTROL "", IDC_APPLICATION_LIST, "LISTBOX", LBS_STANDARD | LBS_HASSTRINGS | WS_CHILD | WS_VISIBLE, 8, 7, 208, 150
+}
+
+
+IDD_DOSUNIX_TRANSFER DIALOG 46, 63, 292, 103
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Transfert d'un fichier vers Unix"
+FONT 8, "MS Sans Serif"
+{
+ DEFPUSHBUTTON "OK", IDOK, 232, 58, 50, 14
+ PUSHBUTTON "&Annuler", IDCANCEL, 232, 80, 50, 14
+ PUSHBUTTON "&Parcourir...", IDC_TRANSFER_CHOOSE, 232, 24, 50, 14
+ LTEXT "&Transférer le fichier Msdos :", -1, 12, 12, 94, 8
+ EDITTEXT IDC_DOS_FILE, 12, 25, 205, 12, ES_LEFT | ES_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP
+ LTEXT "&Vers le fichier Unix :", -1, 12, 46, 73, 8
+ EDITTEXT IDC_UNIX_FILE, 12, 59, 205, 12, ES_LEFT | ES_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP
+ CONTROL "Transfert &binaire", IDC_BINARY_TRANSFER, "BUTTON", BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 12, 82, 75, 12
+}
+
+
+
+IDD_UNIXDOS_TRANSFER DIALOG 46, 63, 292, 103
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Réception d'un fichier Unix"
+FONT 8, "MS Sans Serif"
+{
+ DEFPUSHBUTTON "OK", IDOK, 232, 58, 50, 14
+ PUSHBUTTON "&Annuler", IDCANCEL, 232, 80, 50, 14
+ PUSHBUTTON "&Parcourir...", IDC_TRANSFER_CHOOSE, 232, 24, 50, 14
+ LTEXT "Nom du fichier &Msdos :", -1, 12, 12, 97, 8
+ EDITTEXT IDC_DOS_FILE, 12, 25, 205, 12, ES_LEFT | ES_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP
+ LTEXT "Fichier &Unix à transférer :", -1, 12, 46, 87, 8
+ EDITTEXT IDC_UNIX_FILE, 12, 59, 205, 12, ES_LEFT | ES_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP
+ CONTROL "Transfert &binaire", IDC_BINARY_TRANSFER, "BUTTON", BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 12, 82, 75, 12
+}
+
+
+IDD_BIP DIALOG 125, 87, 154, 57
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE
+FONT 8, "MS Sans Serif"
+{
+ CONTROL "Bip !", -1, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 58, 22, 26, 8
+ CONTROL "", -1, "static", SS_ICON | WS_CHILD | WS_VISIBLE, 15, 14, 18, 20
+}
+
+
+
+
+
+IDD_MODIFY_CONFIGURATION DIALOG 20, 40, 223, 160
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Modification d'une configuration"
+FONT 8, "MS Sans Serif"
+{
+ LISTBOX IDC_CONFIGURATION_LIST, 11, 21, 127, 132, LBS_STANDARD | LBS_HASSTRINGS | WS_HSCROLL | WS_TABSTOP
+ DEFPUSHBUTTON "&Fermer", IDOK, 162, 21, 50, 14
+ PUSHBUTTON "Par &défaut", IDC_DEFAULT, 162, 43, 50, 14
+ LTEXT "&Liste des configurations", IDC_LISTBOX_TITLE, 11, 6, 108, 8
+ PUSHBUTTON "&Modifier", IDC_MODIFY, 163, 92, 50, 14
+ PUSHBUTTON "&Créer", IDC_CREATE, 163, 114, 50, 14
+ PUSHBUTTON "&Supprimer", IDC_DELETE, 163, 136, 50, 14
+}
+
+
+
+IDD_MODIFY_SESSIONS  DIALOG 10, 10, 223, 160
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Modification des sessions d'une configuration"
+FONT 8, "MS Sans Serif"
+{
+ LISTBOX IDC_CONFIGURATION_LIST, 11, 21, 127, 132, LBS_NOTIFY | LBS_HASSTRINGS | WS_BORDER | WS_VSCROLL | WS_TABSTOP
+ DEFPUSHBUTTON "&Fermer", IDOK, 162, 21, 50, 14
+ LTEXT "&Liste des sessions :", IDC_LISTBOX_TITLE, 11, 6, 108, 8
+ PUSHBUTTON "&Modifier", IDC_MODIFY, 163, 92, 50, 14
+ PUSHBUTTON "&Créer", IDC_CREATE, 163, 114, 50, 14
+ PUSHBUTTON "&Supprimer", IDC_DELETE, 163, 136, 50, 14
+}
+
+
+IDD_SESSION_PARAMETERS DIALOG 10, 10, 283, 50
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Paramètres de session"
+FONT 8, "MS Sans Serif"
+{
+ LTEXT "&Nom de la session :", -1, 8, 9, 68, 8
+ EDITTEXT IDC_SESSION_NAME, 82, 8, 135, 12, WS_BORDER
+ LTEXT "Type :", -1, 8, 31, 68, 8
+ CONTROL "&Réseau", IDC_NETWORK_TYPE, "BUTTON", BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP, 82, 29, 60, 12
+ CONTROL "&Série", IDC_SERIAL_TYPE, "BUTTON", BS_AUTORADIOBUTTON | WS_TABSTOP, 153, 29, 60, 12
+ DEFPUSHBUTTON "&Ok", IDOK, 226, 7, 50, 14
+ PUSHBUTTON "&Annuler", IDCANCEL, 226, 28, 50, 14
+}
+IDD_SESSION_PARAMETERS_NETWORK DIALOG 0, 0, 283, 104
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Paramètres de session"
+FONT 8, "MS Sans Serif"
+{
+ LTEXT "&Nom de la session :", -1, 8, 9, 68, 8
+ EDITTEXT IDC_SESSION_NAME, 82, 8, 135, 12, WS_BORDER | WS_DISABLED
+ LTEXT "Type :", -1, 8, 31, 68, 8
+ CONTROL "&Réseau", IDC_NETWORK_TYPE, "BUTTON", BS_AUTORADIOBUTTON, 82, 29, 60, 12
+ CONTROL "&Série", IDC_SERIAL_TYPE, "BUTTON", BS_AUTORADIOBUTTON, 153, 29, 60, 12
+ LTEXT "Nom du &serveur :", -1, 8, 63, 60, 8
+ EDITTEXT IDC_SERVER_NAME, 82, 61, 135, 12, ES_AUTOHSCROLL | WS_BORDER | WS_TABSTOP
+ LTEXT "&Délai (en ms) :", -1, 8, 85, 60, 8
+ EDITTEXT IDC_DELAY, 82, 82, 36, 12
+ CHECKBOX "Echo &local", IDC_LOCAL_ECHO, 153, 83, 60, 12, BS_AUTOCHECKBOX | WS_TABSTOP
+ PUSHBUTTON "&Préférences", IDC_PREFERENCES, 226, 82, 50, 14
+ DEFPUSHBUTTON "&Ok", IDOK, 226, 7, 50, 14
+ PUSHBUTTON "&Annuler", IDCANCEL, 226, 28, 50, 14
+}
+
+IDD_SESSION_PARAMETERS_SERIAL DIALOG 0, 0, 283, 163
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Paramètres de session"
+FONT 8, "MS Sans Serif"
+{
+ LTEXT "&Nom de la session :", -1, 8, 9, 68, 8
+ EDITTEXT IDC_SESSION_NAME, 82, 8, 135, 12, WS_BORDER | WS_DISABLED
+ LTEXT "Type :", -1, 8, 31, 68, 8
+ CONTROL "&Réseau", IDC_NETWORK_TYPE, "BUTTON", BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP, 82, 29, 60, 12
+ CONTROL "&Série", IDC_SERIAL_TYPE, "BUTTON", BS_AUTORADIOBUTTON | WS_TABSTOP, 153, 29, 60, 12
+ LTEXT "P&ort :", -1, 8, 63, 60, 8
+ COMBOBOX IDC_PORT, 48, 62, 51, 44, CBS_DROPDOWNLIST | WS_TABSTOP | CBS_HASSTRINGS | CBS_SORT | WS_VSCROLL 
+ LTEXT "&Vitesse :", -1, 125, 63, 60, 8
+ COMBOBOX IDC_SPEED, 166, 62, 61, 55, CBS_DROPDOWNLIST | WS_TABSTOP | CBS_HASSTRINGS | WS_VSCROLL
+ GROUPBOX "&Bits de données", -1, 8, 80, 125, 33, BS_GROUPBOX | WS_GROUP
+ CONTROL "8", IDC_DATA_BITS_8, "BUTTON", WS_TABSTOP | BS_AUTORADIOBUTTON, 16, 94, 23, 12
+ CONTROL "7", IDC_DATA_BITS_7, "BUTTON", WS_TABSTOP | BS_AUTORADIOBUTTON, 48, 94, 23, 12
+ CONTROL "6", IDC_DATA_BITS_6, "BUTTON", WS_TABSTOP | BS_AUTORADIOBUTTON, 80, 94, 23, 12
+ CONTROL "5", IDC_DATA_BITS_5, "BUTTON", WS_TABSTOP | BS_AUTORADIOBUTTON, 111, 94, 18, 12
+ GROUPBOX "Bits de &stop", -1, 166, 80, 95, 33, BS_GROUPBOX | WS_GROUP
+ CONTROL "1", IDC_STOP_BIT_1, "BUTTON", WS_TABSTOP | BS_AUTORADIOBUTTON, 174, 94, 27, 12
+ CONTROL "1.5", IDC_STOP_BIT_15, "BUTTON", WS_TABSTOP | BS_AUTORADIOBUTTON, 206, 94, 27, 12
+ CONTROL "2", IDC_STOP_BIT_2, "BUTTON", WS_TABSTOP | BS_AUTORADIOBUTTON, 238, 94, 19, 12
+ GROUPBOX "&Parité", -1, 8, 120, 125, 33, BS_GROUPBOX | WS_GROUP
+ CONTROL "Aucune", IDC_PARITY_NONE, "BUTTON", BS_AUTORADIOBUTTON | WS_TABSTOP, 16, 134, 38, 12
+ CONTROL "Paire", IDC_PARITY_EVEN, "BUTTON", BS_AUTORADIOBUTTON | WS_TABSTOP, 57, 134, 29, 12
+ CONTROL "Impaire", IDC_PARITY_ODD, "BUTTON", BS_AUTORADIOBUTTON | WS_TABSTOP, 91, 134, 38, 12
+ CHECKBOX "Echo &local", IDC_LOCAL_ECHO, 153, 141, 60, 12, BS_AUTOCHECKBOX | WS_TABSTOP
+ PUSHBUTTON "&Préférences", IDC_PREFERENCES, 226, 139, 50, 14
+ DEFPUSHBUTTON "&Ok", IDOK, 226, 7, 50, 14
+ PUSHBUTTON "&Annuler", IDCANCEL, 226, 28, 50, 14
+}
+
+IDD_PREFERENCES DIALOG 10, 10, 294, 226
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Préférences"
+FONT 8, "MS Sans Serif"
+{
+ LTEXT "&Titre de la session :", -1, 8, 8, 76, 8
+ EDITTEXT IDC_WINDOW_TITLE, 8, 18, 213, 12, ES_AUTOHSCROLL | WS_BORDER | WS_TABSTOP
+ GROUPBOX "Police de caractères", -1, 8, 38, 213, 62, BS_GROUPBOX
+ LTEXT "&Nom :", -1, 15, 55, 30, 8
+ LTEXT "Ta&ille :", -1, 14, 80, 30, 8
+ EDITTEXT IDC_FONT_NAME, 43, 54, 169, 12, ES_READONLY
+ EDITTEXT IDC_FONT_HEIGHT, 42, 78, 31, 12, ES_READONLY
+ PUSHBUTTON "&Polices...", IDC_CHOOSE_FONT, 162, 78, 50, 14
+ GROUPBOX "&Couleurs :", -1, 8, 111, 140, 70, BS_GROUPBOX
+ CONTROL "Exemple", IDC_EXAMPLE, "STATIC", SS_LEFTNOWORDWRAP | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_GROUP, 16, 129, 64, 45
+ PUSHBUTTON "&Texte...", IDC_FOREGROUND_COLOR, 91, 129, 50, 18
+ PUSHBUTTON "&Fond...", IDC_BACKGROUND_COLOR, 91, 156, 50, 18
+ GROUPBOX "&Jeu de caractères", -1, 157, 111, 93, 32, BS_GROUPBOX | WS_GROUP
+ CONTROL "OEM", IDC_OEM_CHARSET, "BUTTON", BS_AUTORADIOBUTTON, 168, 124, 32, 12
+ CONTROL "Ansi", IDC_ANSI_CHARSET, "BUTTON", BS_AUTORADIOBUTTON, 216, 124, 32, 12
+ LTEXT "&Emulation :", -1, 8, 193, 60, 8
+ EDITTEXT IDC_EMULATION, 8, 203, 213, 12, ES_AUTOHSCROLL | WS_BORDER | WS_TABSTOP | ES_READONLY
+ PUSHBUTTON "C&hoisir...", IDC_CHOOSE_EMULATION, 235, 202, 50, 14
+ DEFPUSHBUTTON "&Ok", IDOK, 237, 16, 50, 14
+ PUSHBUTTON "&Annuler", IDCANCEL, 237, 38, 50, 14
+}
+
+
+
+
+// Infos de version
+1 VERSIONINFO LOADONCALL MOVEABLE 
+
+    FILEVERSION 	1, 3, 11, 0
+    PRODUCTVERSION 	1, 3, 11, 0
+    FILEFLAGSMASK 	0
+    FILEFLAGS 		VS_FFI_FILEFLAGSMASK
+    FILEOS 		VOS__WINDOWS16
+    FILETYPE 		VFT_APP
+
+    {
+	BLOCK 		"StringFileInfo"
+	    {
+
+	// Language Français ( 0x040C ), jeu de caractères Windows ( 0x04EA )
+		BLOCK "040C04E4"   
+		  {
+			VALUE "CompanyName"     , "Chartier Informatique S.A.\000"
+			VALUE "FileVersion"     , "1.3.11\000"
+			VALUE "InternalName"    , "TERMINAL\000"
+			VALUE "LegalCopyright"  , "Copyright © Chartier Informatique S.A. 1995. Tous droits réservés.\000"
+			VALUE "LegalTrademarks" , "Windows (TM) est une marque déposée de Microsoft Corporation.\000"
+			VALUE "OriginalFilename", "TERMINAL.EXE\000"
+
+			VALUE "ProductVersion"  , "1.3.11\000", 
+			VALUE "ProductName"     , "CHEOPS\000"
+			VALUE "FileDescription" , "Emulateur de Terminal pour l'application Cheops\000"
+		    }
+	       }
+
+
+	BLOCK "VarFileInfo"
+	  {
+		VALUE 	"Translation", 0x040C, 0x04e4
+	   }
+   }
+
+
+
+// Boîte de dialogue "A propos de"
+IDD_ABOUT DIALOG 30, 61, 204, 81
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "A propos du Terminal"
+FONT 8, "MS Sans Serif"
+{
+ CTEXT "Version", IDC_VERSION, 2, 14, 200, 8, SS_NOPREFIX | WS_CHILD | WS_VISIBLE | SS_CENTER
+ CTEXT "Terminal", -1, 2, 4, 200, 8, SS_NOPREFIX | WS_CHILD | WS_VISIBLE | SS_CENTER
+ CTEXT "", IDC_COPYRIGHT, 2, 40, 200, 17, SS_NOPREFIX | WS_CHILD | WS_VISIBLE | SS_CENTER
+ RTEXT "", IDC_DEBUG, 136, 55, 66, 8, SS_NOPREFIX | WS_CHILD | WS_VISIBLE | SS_RIGHT
+ ICON ICON_TERMINAL, -1, 2, 2, 18, 20, WS_BORDER
+ DEFPUSHBUTTON "OK", IDOK, 82, 61, 40, 14
+ CONTROL "Date", IDC_DATE, "STATIC", SS_CENTER | SS_NOPREFIX | WS_GROUP, 2, 27, 200, 8
+}
+
+
+
+
+
+IDD_SESSION_LIST DIALOG 40, 20, 223, 158
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION
+CAPTION "Liste des sessions"
+FONT 8, "MS Sans Serif"
+{
+ LISTBOX IDC_SESSION_LIST, 8, 7, 145, 149, LBS_NOTIFY | WS_BORDER | LBS_HASSTRINGS | WS_BORDER | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+ DEFPUSHBUTTON "&Aller vers...", IDC_CHOOSE_SESSION, 162, 7, 53, 21
+ PUSHBUTTON "&Ouvrir", IDC_OPEN_SESSION, 162, 105, 53, 19
+ PUSHBUTTON "&Fermer", IDC_CLOSE_SESSION, 162, 133, 53, 19
+}
+
+IDD_GENERAL DIALOG 68, 47, 259, 157
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Options de terminal"
+FONT 8, "MS Sans Serif"
+{
+ GROUPBOX "", -1, 6, 8, 181, 109, BS_GROUPBOX
+ CHECKBOX "&Bip sonore", IDC_ALARM_BEEP, 14, 18, 60, 12, BS_AUTOCHECKBOX | WS_TABSTOP
+ CHECKBOX "Ouverture automatique des &sessions", IDC_AUTO_OPEN, 14, 34, 136, 12, BS_AUTOCHECKBOX | WS_TABSTOP
+ CHECKBOX "&Confirmer la fermeture à la sortie", IDC_CONFIRM_ON_EXIT, 14, 50, 125, 12, BS_AUTOCHECKBOX | WS_TABSTOP
+ CHECKBOX "Faire un saut de &page après une copie-écran", IDC_FF_ON_HARDCOPY, 14, 66, 163, 12, BS_AUTOCHECKBOX | WS_TABSTOP
+ CHECKBOX "Tracer un &rectangle autour d'une copie-écran", IDC_FRAME_HARDCOPY, 14, 82, 163, 12, BS_AUTOCHECKBOX | WS_TABSTOP
+ CHECKBOX "&Touches de fonction à l'ancienne mode", IDC_OLD_FUNCTION_KEYS, 14, 98, 166, 12, BS_AUTOCHECKBOX | WS_TABSTOP
+ LTEXT "Taille &minimum d'une entrée dans l'historique :", -1, 6, 126, 154, 8
+ EDITTEXT IDC_MIN_REDO_SIZE, 162, 124, 25, 12
+ DEFPUSHBUTTON "&Ok", IDOK, 200, 11, 50, 14
+ PUSHBUTTON "&Annuler", IDCANCEL, 200, 30, 50, 14
+ LTEXT "Délai d'&ouverture des menus Cheops :", -1, 6, 142, 131, 8
+ EDITTEXT IDC_AUTOOPEN_DELAY, 162, 140, 25, 12
+ LTEXT "(en millisecondes)", -1, 194, 142, 60, 8
+}
+
+
+
+
+/**************************************************************************/
+/*                                                                        */
+/*  Bitmaps pour les pavés de touches de fonctions.                       */
+/*                                                                        */
+/**************************************************************************/
+
+Creation 	BITMAP "resource/cbcreate.bmp"
+Modifier        BITMAP "resource/cbmodify.bmp"
+Interroger 	BITMAP "resource/cbquery.bmp"
+Suppression 	BITMAP "resource/cbdelete.bmp"
+Terminer 	BITMAP "resource/cbquit.bmp"
+Unknown BITMAP "resource/dummy.bmp"
+Aide 		BITMAP "resource/cbhelp.bmp"
+Recommencer BITMAP "resource/cbundo.bmp"
+Refaire BITMAP "resource/cbundo.bmp"
+Book BITMAP "resource/book.bmp"
+Suivant BITMAP "resource/cbnext.bmp"
+Precedent BITMAP "resource/cbprev.bmp"
+Premier BITMAP "resource/cbfirst.bmp"
+Dernier BITMAP "resource/cblast.bmp"
+Confirmer BITMAP "resource/cbconf.bmp"
+Confirme BITMAP "resource/cbconf.bmp"
+Valider BITMAP "resource/cbconf.bmp"
+Generer BITMAP "resource/cbconf.bmp"
+Genere BITMAP "resource/cbconf.bmp"
+Valide BITMAP "resource/cbconf.bmp"
+Abandon BITMAP "resource/cbaband.bmp"
+Accepter BITMAP "resource/cbaccept.bmp"
+Ecrire BITMAP "resource/cbwrite.bmp"
+Courrier BITMAP "resource/cbmail.bmp"
+Systeme BITMAP "resource/cbsystem.bmp"
+Config BITMAP "resource/cbconfig.bmp"
+Dummy BITMAP "resource/dummy.bmp"
+Bulsit BITMAP "resource/cbbull.bmp"
+Bulletin BITMAP "resource/cbbull.bmp"
+Dossier BITMAP "resource/cbdoss.bmp"
+etiquett BITMAP "resource/cbetiq.bmp"
+Ventiler BITMAP "resource/cbventil.bmp"
+Repart BITMAP "resource/cbventil.bmp"
+
+
+
+
+/**************************************************************************/
+/*                                                                        */
+/*  Elements de la fenêtre d'édition.                                     */
+/*                                                                        */
+/**************************************************************************/
+
+# include	<owl/statusba.rh>
+# include	"EditFile.h"
+
+
+IDC_FILE_PRINT		BITMAP  "Resource/Print.bmp"
+IDC_FILE_SAVE   	BITMAP  "Resource/Save.bmp"
+IDC_EDIT_SEARCH		BITMAP	"Resource/Find.bmp"
+IDC_EDIT_SEARCH_AGAIN   BITMAP  "Resource/FindNext.bmp"
+IDC_EDIT_GOTO_PAGE BITMAP "resource/gopage.bmp"
+IDC_EDIT_GOTO_LINE BITMAP "resource/goline.bmp"
+IDC_EDIT_COPY		BITMAP	"Resource/Copy.bmp"
+
+
+EditWindow  MENU
+   {
+	POPUP  "&Fichier" 
+	   {
+
+		MENUITEM  "&Enregistrer...\tAlt+E", IDC_FILE_SAVE
+		MENUITEM  SEPARATOR
+		MENUITEM  "&Police...\tAlt+P", IDC_FILE_FONT     
+		MENUITEM  SEPARATOR
+		MENUITEM  "&Imprimer...\tCtrl+P", IDC_FILE_PRINT
+		MENUITEM  "&Configuration de l'imprimante", IDC_FILE_PRINT_CONFIG
+		MENUITEM  SEPARATOR
+		MENUITEM  "&Fermer\tAlt+F4", IDC_FILE_EXIT
+	    }
+
+	POPUP  "&Edition"
+	   {
+		MENUITEM  "&Copier", IDC_EDIT_COPY
+		MENUITEM  "&Tout sélectionner", IDC_EDIT_SELECT_ALL
+		MENUITEM  "&Annuler la sélection", IDC_EDIT_CANCEL_SELECTION
+		MENUITEM  SEPARATOR
+		MENUITEM  "Aller à la &page...\tAlt+A", IDC_EDIT_GOTO_PAGE
+		MENUITEM  "Aller à la &ligne...\tAlt+L", IDC_EDIT_GOTO_LINE
+		MENUITEM  SEPARATOR
+		MENUITEM  "&Rechercher...\tCtrl+F", IDC_EDIT_SEARCH
+		MENUITEM  "Pour&suivre la recherche...\tF3", IDC_EDIT_SEARCH_AGAIN
+	    }
+
+# if   COMPRESS_STATISTICS  &&  ! STANDALONE
+	POPUP   "&Statistiques"
+	   {
+		MENUITEM  "&Dictionnaire...", IDC_DICTIONARY_STATISTICS
+	    }
+# endif
+
+     }
+
+
+EditWindow  ACCELERATORS
+   {
+	"^C", IDC_EDIT_COPY,
+	VK_NUMPAD5, IDC_EDIT_SELECT_ALL, CONTROL, VIRTKEY
+	"^P", IDC_FILE_PRINT
+	"P", IDC_FILE_FONT, ALT, VIRTKEY
+	"E", IDC_FILE_SAVE, ALT, VIRTKEY
+	"A", IDC_EDIT_GOTO_PAGE, ALT, VIRTKEY
+	"L", IDC_EDIT_GOTO_LINE, ALT, VIRTKEY
+	"^F", IDC_EDIT_SEARCH
+	VK_F3, IDC_EDIT_SEARCH_AGAIN, VIRTKEY
+
+    }
+
+
+
+
+
+STRINGTABLE
+   {
+	IDS_MODES,     "Ext|Maj|Num|Defil|Ovr|Enr"	
+	IDS_MODESOFF, "   |   |   |     |Ins|   "
+
+	IDC_FILE_SAVE, "Enregistre cette édition dans un fichier"
+	IDC_FILE_FONT, "Permet de changer la police de caractères utilisée"
+	IDC_FILE_PRINT, "Imprime cette édition"
+	IDC_FILE_PRINT_CONFIG, "Configuration de l'imprimante"
+	IDC_FILE_EXIT, "Ferme cette fenêtre"
+	IDC_EDIT_COPY, "Copie le texte sélectionné dans le presse-papiers"
+	IDC_EDIT_SELECT_ALL, "Sélectionne tout le texte"
+	IDC_EDIT_CANCEL_SELECTION, "Annule la sélection de texte"
+	IDC_EDIT_GOTO_PAGE, "Atteint la page voulue"
+	IDC_EDIT_GOTO_LINE, "Atteint la ligne voulue"
+	IDC_EDIT_SEARCH, "Effectue une recherche sur le texte"
+	IDC_EDIT_SEARCH_AGAIN, "Répète la dernière recherche"
+
+# if	COMPRESS_STATISTICS  &&  ( ! STANDALONE )
+	IDC_DICTIONARY_STATISTICS, "Affiche des statistiques sur la décompression"
+# endif
+
+    }
+
+
+
+
+# if	COMPRESS_STATISTICS  &&  ( ! STANDALONE )
+IDD_DICTIONARY_STATISTICS DIALOG -52, 32, 303, 198
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CLASS "BorDlg_Gray"
+CAPTION "Ragnagna"
+FONT 8, "MS Sans Serif"
+{
+ CONTROL "Accès directs réussis :", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 14, 22, 141, 8
+ CONTROL "Accès réussis dans la liste chaînée :", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 14, 36, 141, 8
+ CONTROL "Comparaisons effectuées pour ces accès :", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 14, 50, 140, 8
+ CONTROL "Ajouts dans la liste chaînée :", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 14, 64, 141, 8
+ CONTROL "Comparaisons effectuées pour ces ajouts :", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 14, 78, 141, 8
+ CONTROL "Hash Table", -1, "BorShade", BSS_GROUP | BSS_CAPTION | BSS_CENTER | WS_CHILD | WS_VISIBLE, 8, 8, 207, 84
+ CONTROL "Dictionnaire", -1, "BorShade", BSS_GROUP | BSS_CAPTION | BSS_CENTER | WS_CHILD | WS_VISIBLE, 8, 100, 207, 41
+ CONTROL "4000000000", IDC_HT_HITS, "BorStatic", SS_RIGHT | WS_CHILD | WS_VISIBLE | WS_GROUP, 158, 22, 50, 8
+ CONTROL "4000000000", IDC_LL_HITS, "BorStatic", SS_RIGHT | WS_CHILD | WS_VISIBLE | WS_GROUP, 158, 36, 50, 8
+ CONTROL "4000000000", IDC_LL_HITS_SEARCHES, "BorStatic", SS_RIGHT | WS_CHILD | WS_VISIBLE | WS_GROUP, 158, 50, 50, 8
+ CONTROL "4000000000", IDC_LL_ADDS, "BorStatic", SS_RIGHT | WS_CHILD | WS_VISIBLE | WS_GROUP, 158, 64, 50, 8
+ CONTROL "4000000000", IDC_LL_ADDS_SEARCHES, "BorStatic", SS_RIGHT | WS_CHILD | WS_VISIBLE | WS_GROUP, 158, 78, 50, 8
+ CONTROL "Taille maximum du code :", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 14, 114, 128, 8
+ CONTROL "Nombre d'éléments du dictionnaire :", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 14, 128, 119, 8
+ CONTROL "4000000000", IDC_MAX_CODE_SIZE, "BorStatic", SS_RIGHT | WS_CHILD | WS_VISIBLE | WS_GROUP, 158, 114, 50, 8
+ CONTROL "4000000000", IDC_DICTIONARY_SIZE, "BorStatic", SS_RIGHT | WS_CHILD | WS_VISIBLE | WS_GROUP, 158, 128, 50, 8
+ CONTROL "Nombre de dictionnaires :", IDC_DICTIONARY_COUNT_TEXT, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 14, 163, 115, 8
+ CONTROL "Blocs de données reçus :", IDC_BLOCK_COUNT_TEXT, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 14, 177, 110, 8
+ CONTROL "Général", IDC_GLOBAL_GROUPBOX, "BorShade", BSS_GROUP | BSS_CAPTION | BSS_CENTER | WS_CHILD | WS_VISIBLE, 8, 149, 207, 41
+ CONTROL "", -1, "BorShade", BSS_VDIP | BSS_LEFT | WS_CHILD | WS_VISIBLE, 226, 0, 2, 198
+ CONTROL "&Ok", IDOK, "BorBtn", BS_DEFPUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 247, 21, 37, 25
+ CONTROL "<<", IDC_FIRST_BUTTON, "BorBtn", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 246, 90, 37, 25
+ CONTROL "<", IDC_PREVIOUS_BUTTON, "BorBtn", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 246, 115, 37, 25
+ CONTROL ">", IDC_NEXT_BUTTON, "BorBtn", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 246, 140, 37, 25
+ CONTROL ">>", IDC_LAST_BUTTON, "BorBtn", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 246, 165, 37, 25
+ CONTROL "4000000000", IDC_DICTIONARY_COUNT, "BorStatic", SS_RIGHT | WS_CHILD | WS_VISIBLE | WS_GROUP, 158, 163, 50, 8
+ CONTROL "4000000000", IDC_BLOCK_COUNT, "BorStatic", SS_RIGHT | WS_CHILD | WS_VISIBLE | WS_GROUP, 158, 177, 50, 8
+ CONTROL "", -1, "BorShade", BSS_HDIP | BSS_LEFT | WS_CHILD | WS_VISIBLE, 226, 68, 77, 2
+}
+
+
+IDC_FIRST_BUTTON + BBN_NORMAL BITMAP "resource/bbn1firs.bmp"
+IDC_FIRST_BUTTON + BBN_PRESSED BITMAP "resource/bbn3firs.bmp"
+IDC_FIRST_BUTTON + BBN_FOCUSED BITMAP "resource/bbn5firs.bmp"
+
+IDC_LAST_BUTTON + BBN_NORMAL	BITMAP  "resource/bbn1last.bmp"
+IDC_LAST_BUTTON + BBN_PRESSED	BITMAP  "resource/bbn3last.bmp"
+IDC_LAST_BUTTON + BBN_FOCUSED BITMAP "resource/bbn5last.bmp"
+
+IDC_NEXT_BUTTON + BBN_NORMAL	BITMAP  "resource/bbn1next.bmp"
+IDC_NEXT_BUTTON + BBN_PRESSED	BITMAP  "resource/bbn3next.bmp"
+IDC_NEXT_BUTTON + BBN_FOCUSED BITMAP "resource/bbn5next.bmp"
+
+IDC_PREVIOUS_BUTTON + BBN_NORMAL BITMAP "resource/bbn1prev.bmp"
+IDC_PREVIOUS_BUTTON + BBN_PRESSED BITMAP "resource/bbn3prev.bmp"
+IDC_PREVIOUS_BUTTON + BBN_FOCUSED BITMAP "resource/bbn5prev.bmp"
+
+
+
+# endif
+
+
+
+
+
+
+
+
+
+IDD_OBJECT_LIST DIALOG 40, 63, 270, 197
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Liste des objets alloués"
+FONT 8, "MS Sans Serif"
+{
+ DEFPUSHBUTTON "&Ok", IDOK, 211, 6, 50, 14
+ PUSHBUTTON "&Annuler", IDCANCEL, 211, 24, 50, 14
+ LISTBOX IDC_OBJECT_LIST, 6, 6, 196, 174, LBS_STANDARD | LBS_HASSTRINGS | LBS_USETABSTOPS | WS_HSCROLL | WS_VSCROLL | WS_TABSTOP
+ CONTROL "", -1, "BorShade", BSS_RGROUP | BSS_CAPTION | BSS_LEFT | WS_CHILD | WS_VISIBLE, 0, 0, 270, 204
+ CONTROL "Text", IDC_OBJECT_COUNT, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 7, 184, 194, 8
+}
+
+
+recu BITMAP "resource/cbrecu.bmp"
+
+
+Liste BITMAP 
+{
+ '42 4D F6 01 00 00 00 00 00 00 76 00 00 00 28 00'
+ '00 00 20 00 00 00 18 00 00 00 01 00 04 00 00 00'
+ '00 00 80 01 00 00 00 00 00 00 00 00 00 00 00 00'
+ '00 00 10 00 00 00 00 00 00 00 00 00 80 00 00 80'
+ '00 00 00 80 80 00 80 00 00 00 80 00 80 00 80 80'
+ '00 00 C0 C0 C0 00 80 80 80 00 00 00 FF 00 00 FF'
+ '00 00 00 FF FF 00 FF 00 00 00 FF 00 FF 00 FF FF'
+ '00 00 FF FF FF 00 FF FF FF 07 77 77 77 77 77 77'
+ '77 77 77 0F FF FF FF FF FF 07 07 77 77 77 77 77'
+ '77 77 07 0F FF FF FF FF FF 07 77 77 77 77 77 77'
+ '77 77 77 0F FF FF FF FF FF 07 07 77 77 77 77 77'
+ '77 77 07 0F FF FF FF FF FF 07 77 77 77 77 77 77'
+ '77 77 77 0F FF FF FF FF FF 07 07 77 77 77 77 77'
+ '77 77 07 0F FF FF FF FF FF 07 77 77 77 77 77 77'
+ '77 77 77 0F FF FF FF FF FF 07 07 77 77 77 77 77'
+ '77 77 07 0F FF FF FF FF FF 07 77 77 77 77 77 77'
+ '77 77 77 0F FF FF FF FF FF 07 07 77 77 77 77 77'
+ '77 77 07 0F FF FF FF FF FF 07 77 77 77 77 77 77'
+ '77 77 77 0F FF FF FF FF FF 07 07 77 77 77 77 77'
+ '77 77 07 0F FF FF FF FF FF 07 77 77 77 77 77 77'
+ '77 77 77 0F FF FF FF FF FF 07 07 77 77 77 77 77'
+ '77 77 07 0F FF FF FF FF FF 07 77 77 77 77 77 77'
+ '77 77 77 0F FF FF FF FF FF 07 07 77 77 77 77 77'
+ '77 77 07 0F FF FF FF FF FF 07 77 77 77 77 77 77'
+ '77 77 77 0F FF FF FF FF FF 07 07 77 77 77 77 77'
+ '77 77 07 0F FF FF FF FF FF 07 77 77 77 77 77 77'
+ '77 77 77 0F FF FF FF FF FF 07 07 77 77 77 77 77'
+ '77 77 07 0F FF FF FF FF FF 07 77 77 77 77 77 77'
+ '77 77 77 0F FF FF FF FF FF 00 00 00 00 00 00 00'
+ '00 00 00 0F FF FF FF FF FF FF FF FF FF FF FF FF'
+ 'FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF'
+ 'FF FF FF FF FF FF'
+}
+
+
+DIALOG_1 DIALOG 75, 59, 234, 96
+STYLE WS_CHILD | WS_VISIBLE | WS_DLGFRAME
+CLASS "BorDlg_Gray"
+FONT 8, "MS Sans Serif"
+{
+ CONTROL "Text", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 57, 53, 115, 9
+}
+
+
+IDD_PRINTING DIALOG 94, 95, 194, 74
+STYLE WS_POPUP | WS_VISIBLE | WS_BORDER | WS_THICKFRAME
+CLASS "BorDlg_Gray"
+FONT 8, "MS Sans Serif"
+{
+ PUSHBUTTON "Annuler", IDCANCEL, 72, 56, 50, 14
+ CONTROL "Impression en cours, veuillez patienter...", -1, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 30, 9, 134, 8
+ CONTROL "", IDC_PRINTING_SLIDER, "BorStatic", SS_LEFT | WS_CHILD | WS_VISIBLE, 9, 25, 175, 8
+}
+

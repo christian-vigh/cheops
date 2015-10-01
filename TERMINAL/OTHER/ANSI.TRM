@@ -1,0 +1,118 @@
+; ANSI.TRM
+;
+; Définition de l'émulation UNIX pour un terminal ANSI.
+;
+
+
+[Settings]
+GraphicFont		=  MS LineDraw
+GraficFontHeight        =  13
+Columns			=  80
+Lines			=  25
+
+
+[Special Characters]			; Caractère reçu, caractère affiché
+UpperLeftCorner		=  Z, \218
+UpperRightCorner	=  ?, \191
+LowerLeftCorner		=  @, \192
+LowerRightCorner	=  Y, \217
+VerticalLine		=  3, \179
+HorizontalLine		=  D, \196
+SolidSquare		=  [, \219
+CheckerBoard		=  1, \176
+Degree			=  x, \248
+PlusMinus		=  q, \241
+Squares			=  2, \178
+Plus			=  E, +
+LeftTee			=  C, \195
+RightTee		=  4, \180
+BottomTee		=  A, \193
+TopTee			=  B, \194
+
+
+
+[Keys]
+F1		=  \E[M		; kf1
+F2		=  \E[N		; kf2
+F3		=  \E[O		; etc.
+F4		=  \E[P
+F5		=  \E[Q
+F6		=  \E[R
+F7		=  \E[S
+F8		=  \E[T
+F9		=  \E[U
+F10		=  \E[V
+F11		=  \E[W
+F12		=  \E[X
+Home		=  \E[H		; khome
+NextPage        =  \E[G		; knp
+PreviousPage	=  \E[I		; kpp
+Tab		=  \t
+BackTab		=  \E[Z		; kcbt
+Backspace	=  ^H		; kbs
+Delete		=  \E[E		; kdch1
+DelLine		=  \E[I		; kdl1
+Down		=  \E[B		; kcud1
+End		=  \E[F		; kend
+ClearEOL	=  \E[G		; kel
+Insert		=  \E[L		; kich1
+HomeDown	=  \E[F		; kll
+Right		=  \E[C		; kcuf1
+Up		=  \E[A		; kcuu1
+Left		=  \E[D		; kcub1
+Break		=  \127
+XON		=  \17
+XOFF		=  \19
+
+
+[Escapes]
+Bell		=  ^G
+BackSpace	=  ^H
+Blink		=  \E[5m
+Bold		=  \E[1m
+BackTab		=  \E[Z
+Clear		=  \E[2J\E[H
+CarriageReturn	=  \r
+Newline		=  \n
+Left		=  ^H
+Down		=  \E[B
+Right		=  \E[C
+Up		=  \E[A
+GotoXY		=  \E[%n;%nH
+Delete		=  \E[P
+DelLine		=  \E[M
+ClearEOD	=  \E[J
+ClearEOL	=  \E[K
+Home		=  \E[H
+Tab		=  \t
+Insert		=  \E[@
+InsertLine	=  \E[L
+ScrollUp	=  \E[S
+Reverse		=  \E[7m
+ScrollDown	=  \E[T
+StartUnderline	=  \E[4m
+StopUnderline	=  \E[m
+AllAttrOFF	=  \E[10;0m
+InvisibleMode	=  \E[8m
+StartStandout	=  \E[7m
+StopStandout	=  \E[m
+StartACS	=  \E[12m
+StopACS		=  \E[10m
+SetBackground	=  \E[4%nm
+SetForeground	=  \E[3%nm
+SetColor	=  \E[=%n;%nC
+SetFKString	=  \E[=fs%n;%l;%sm
+SetFKLabel	=  \E[=fl%n;%l;%sm
+EnableFK	=  \E[=fe
+DisableFK	=  \E[=fd
+BulkPrintBegin	=  \E[=bpb
+BulkPrintEnd	=  \E[=bpe
+FramePrintBegin =  \E[=fpb
+FramePrintEnd	=  \E[=fpe
+CancelPrint	=  \E\E\E
+OpenFile	=  \E[=xof%l;%s;%n~
+CloseFile	=  \E[=xcf
+WriteFile	=  \E[=xwf%l;%s~
+Message		=  \E[=xmb%n;%l;%s;%l;%s~
+Execute		=  \E[=xex%l;%s~
+Type		=  \E[=xty
